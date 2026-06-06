@@ -1,0 +1,7 @@
+# 1_hello.sk
+# A simple Hello World in Shank
+
+fn main():
+    print("Hello, World!")
+
+main()

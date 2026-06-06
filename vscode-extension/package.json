@@ -1,0 +1,55 @@
+{
+  "name": "shank",
+  "displayName": "Shank Language Support",
+  "description": "Official syntax highlighting and language support for the Shank programming language.",
+  "version": "0.1.0",
+  "publisher": "ShankLang",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:shank"
+  ],
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "shank",
+        "aliases": [
+          "Shank",
+          "shank"
+        ],
+        "extensions": [
+          ".sk"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "shank",
+        "scopeName": "source.shank",
+        "path": "./syntaxes/shank.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "shank.runFile",
+        "title": "Run Shank File",
+        "icon": "$(play)"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "shank.runFile",
+          "when": "resourceExtname == .sk",
+          "group": "navigation"
+        }
+      ]
+    }
+  }
+}
