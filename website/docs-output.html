@@ -64,6 +64,17 @@ hello
 3.14
 True</code></pre>
 
+            <h2>The <code class="inline">outt</code> and <code class="inline">outc</code> Keywords</h2>
+            <p><code class="inline">outt</code> works exactly like <code class="inline">out</code>, but it prints the value <b>without</b> appending a newline. This is useful for building output across multiple statements on the same line.</p>
+            <p><code class="inline">outc</code> takes an integer and prints the raw ASCII character corresponding to that value.</p>
+
+<pre><code><span class="kw">outt</span> <span class="str">"Hello, "</span>
+<span class="kw">outt</span> <span class="str">"World"</span>
+<span class="kw">outc</span> <span class="num">33</span> <span class="cm">// Prints '!'</span></code></pre>
+
+            <p>Output:</p>
+<pre><code>Hello, World!</code></pre>
+
             <h2>Printing Expressions</h2>
             <p><code class="inline">out</code> evaluates the expression before printing the result.</p>
 
