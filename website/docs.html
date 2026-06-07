@@ -3,44 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Syllabus - Shank Documentation</title>
+    <title>Shank 0.1 Documentation</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        .docs-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            align-items: start;
+        }
+        
+        .docs-sidebar {
+            position: sticky;
+            top: 100px;
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .docs-sidebar h4 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        
+        .docs-sidebar ul {
+            list-style: none;
+        }
+        
+        .docs-sidebar li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .docs-sidebar a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .docs-sidebar a:hover {
+            color: var(--accent-1);
+        }
+
+        .docs-content {
+            background: var(--bg-surface);
+            padding: 3rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .docs-content h1 { font-size: 2.5rem; margin-bottom: 1.5rem; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .docs-content h2 { font-size: 1.8rem; margin-top: 3rem; margin-bottom: 1rem; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; }
+        .docs-content h3 { font-size: 1.3rem; margin-top: 2rem; margin-bottom: 0.8rem; color: #fff; }
+        .docs-content p { margin-bottom: 1.2rem; color: #cbd5e1; }
+        .docs-content ul { margin-left: 1.5rem; margin-bottom: 1.2rem; color: #cbd5e1; }
+        
+        code {
+            font-family: var(--font-mono);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #e2e8f0;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .code-block code {
+            background: none;
+            padding: 0;
+            color: #d4d4d4;
+        }
+
+        .kw { color: #569cd6; } /* keyword */
+        .func { color: #dcdcaa; } /* function */
+        .str { color: #ce9178; } /* string */
+        .op { color: #d4d4d4; } /* operator */
+        .num { color: #b5cea8; } /* number */
+        .type { color: #4ec9b0; } /* type */
+        .com { color: #6a9955; } /* comment */
+    </style>
 </head>
 <body>
     <nav>
         <a href="index.html" class="nav-brand"><span>🔥</span> Shank</a>
         <div class="nav-links">
-            <a href="docs.html" class="active">Docs</a>
+            <a href="docs.html" class="active">Documentation</a>
             <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
         </div>
     </nav>
     <div class="docs-layout">
         <aside class="docs-sidebar">
-            <h4>Course Modules</h4>
+            <h4>Contents</h4>
             <ul>
-                <li><a href="lecture1.html">Lecture 1: Flowchart & Pseudocode + Basics</a></li>
-                <li><a href="lecture2.html">Lecture 2: How a Shank Program Run</a></li>
-                <li><a href="lecture3.html">Lecture 3: IDE Setup for Coding</a></li>
-                <li><a href="lecture5.html">Lecture 5: VARIABLES</a></li>
-                <li><a href="lecture6.html">Lecture 6: DataTypes</a></li>
-                <li><a href="lecture7.html">Lecture 7: Operators</a></li>
-                <li><a href="lecture8.html">Lecture 8: Input/Output</a></li>
-                <li><a href="lecture9.html">Lecture 9: Conditionals</a></li>
-                <li><a href="lecture10.html">Lecture 10: Loops</a></li>
-                <li><a href="lecture12.html">Lecture 12: Methods / functions</a></li>
-                <li><a href="lecture13.html">Lecture 13: Arrays</a></li>
-                <li><a href="lecture14.html">Lecture 14: Strings</a></li>
-                
+                <li><a href="#execution">1. Execution Model</a></li>
+                <li><a href="#functions">2. Functions</a></li>
+                <li><a href="#control-flow">3. Control Flow</a></li>
+                <li><a href="#type-casting">4. Type Casting</a></li>
             </ul>
         </aside>
+        
         <main class="docs-content">
-            <h1>Shank Masterclass Syllabus</h1>
-            <p>Welcome to the complete, massive documentation for the Shank language. Select a lecture from the sidebar to begin learning.</p>
-            <div style="margin-top: 4rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 2rem;">
-                <a href="index.html" class="btn btn-secondary">← Back Home</a>
-                <a href="lecture1.html" class="btn btn-primary">Start Course →</a>
+            <h1>The Shank Tutorial</h1>
+            <p>This document provides a formal introduction to the core language features of Shank version 0.1.</p>
+
+            <h2 id="execution">1. Execution Model</h2>
+            <p>Shank executes scripts from the top level downwards. Unlike C or Java, a designated <code>main</code> entry point is not required for script execution. Statements at the root level of a file are evaluated sequentially.</p>
+            
+            <div class="code-block">
+                <pre><code><span class="com"># Top-level statements are valid</span>
+<span class="kw">im int</span> x <span class="op">=</span> <span class="num">10</span>
+<span class="kw">out</span> <span class="str">"Value of x is {x}"</span></code></pre>
             </div>
+            
+            <p>If functions are declared within the same file, the Shank compiler resolves them in a prior pass. This allows functions to be invoked before their lexical definition.</p>
+
+            <h2 id="functions">2. Functions</h2>
+            <p>Functions are defined using the <code>def</code> keyword. A function block must be indented using 4 spaces or 1 tab. The syntax resembles Python but incorporates static typing semantics.</p>
+            
+            <h3>2.1 Parameter Types</h3>
+            <p>Parameter types may be specified explicitly using the <code>name: type</code> syntax. If a parameter type is omitted, the compiler infers the type as <code>int</code> by default.</p>
+
+            <div class="code-block">
+                <pre><code><span class="kw">def</span> <span class="func">add</span>(a, b):
+    <span class="kw">return</span> a <span class="op">+</span> b
+
+<span class="kw">def</span> <span class="func">concat</span>(s1: <span class="type">str</span>, s2: <span class="type">str</span>):
+    <span class="kw">return</span> s1 <span class="op">+</span> s2</code></pre>
+            </div>
+
+            <h3>2.2 Return Type Inference</h3>
+            <p>The return type of a function does not need to be declared. The compiler infers the return type by statically analyzing the <code>return</code> expressions within the function body. If the function does not contain a return statement, the inferred type is <code>none</code>.</p>
+
+            <h2 id="control-flow">3. Control Flow</h2>
+            <p>Shank replaces traditional <code>if/else</code> branching with <code>when/otherwise</code> blocks for conditional execution.</p>
+
+            <h3>3.1 Conditionals</h3>
+            <p>A <code>when</code> block executes if its condition evaluates to <code>true</code>. The <code>otherwise</code> block acts as the fallback execution path.</p>
+            
+            <div class="code-block">
+                <pre><code><span class="kw">im int</span> age <span class="op">=</span> <span class="num">20</span>
+
+<span class="kw">when</span> age <span class="op">>=</span> <span class="num">18</span>:
+    <span class="kw">out</span> <span class="str">"Adult"</span>
+<span class="kw">otherwise</span>:
+    <span class="kw">out</span> <span class="str">"Minor"</span></code></pre>
+            </div>
+
+            <h3>3.2 Repetition</h3>
+            <p>Iterative loops over a bounded integer range are handled by the <code>repeat</code> construct. This evaluates an integer expression and binds the current iteration index to the specified identifier.</p>
+
+            <div class="code-block">
+                <pre><code><span class="com"># Iterates 5 times, i takes values 0 through 4</span>
+<span class="kw">repeat</span> <span class="num">5</span> <span class="kw">as</span> i:
+    <span class="kw">out</span> i</code></pre>
+            </div>
+
+            <h2 id="type-casting">4. Type Casting</h2>
+            <p>Explicit type conversion is performed using the <code>-&gt;</code> operator. The expression on the left is cast to the type identifier on the right.</p>
+
+            <div class="code-block">
+                <pre><code><span class="kw">im float</span> pi <span class="op">=</span> <span class="num">3.14159</span>
+<span class="kw">im int</span> rounded <span class="op">=</span> pi <span class="kw">-></span> <span class="type">int</span></code></pre>
+            </div>
+            
+            <p>Casting behavior follows standard C truncation rules for floating-point to integer conversions.</p>
+
         </main>
     </div>
 </body>
