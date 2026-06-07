@@ -77,12 +77,7 @@ static void skip_whitespace(Lexer* lexer) {
     }
 }
 
-static int check_keyword(Lexer* lexer, const char* start, int length, const char* rest, TokenKind kind) {
-    if (lexer->current - start == length && memcmp(start, rest, length) == 0) {
-        return kind;
-    }
-    return TOK_IDENT;
-}
+
 
 static TokenKind identifier_type(Lexer* lexer, const char* start) {
     int len = (int)(lexer->current - start);
@@ -114,6 +109,10 @@ static TokenKind identifier_type(Lexer* lexer, const char* start) {
     MATCH("and", TOK_AND)
     MATCH("or", TOK_OR)
     MATCH("not", TOK_NOT)
+    MATCH("when", TOK_WHEN)
+    MATCH("otherwise", TOK_OTHERWISE)
+    MATCH("repeat", TOK_REPEAT)
+    MATCH("as", TOK_AS)
     
     #undef MATCH
     

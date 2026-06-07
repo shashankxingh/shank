@@ -90,6 +90,7 @@ typedef enum {
     PREC_TERM,    // + -
     PREC_FACTOR,  // * / %
     PREC_POWER,   // **
+    PREC_CAST,    // ->
     PREC_UNARY,   // - not
     PREC_CALL,    // . () []
     PREC_PRIMARY
@@ -355,6 +356,18 @@ static Node* parse_index(Parser* parser, Node* left) {
     return node;
 }
 
+static Node* parse_cast(Parser* parser, Node* left) {
+    consume(parser, TOK_IDENT, "Expect type name after '->'.");
+    char* target_type = (char*)arena_alloc(parser->arena, parser->previous.length + 1);
+    memcpy(target_type, parser->previous.start, parser->previous.length);
+    target_type[parser->previous.length] = '\0';
+    
+    Node* node = node_create(parser->arena, NODE_CAST, left->line, left->col);
+    node->cast_expr.expr = left;
+    node->cast_expr.target_type = target_type;
+    return node;
+}
+
 static ParseRule rules[] = {
     [TOK_INT_LIT]     = {parse_number,   NULL,         PREC_NONE},
     [TOK_FLOAT_LIT]   = {parse_number,   NULL,         PREC_NONE},
@@ -386,6 +399,8 @@ static ParseRule rules[] = {
     [TOK_AND]         = {NULL,           parse_binary, PREC_AND},
     [TOK_OR]          = {NULL,           parse_binary, PREC_OR},
     [TOK_NOT]         = {parse_unary,    NULL,         PREC_NONE},
+    
+    [TOK_ARROW]       = {NULL,           parse_cast,   PREC_CAST},
     
     [TOK_TRUE]        = {parse_literal,  NULL,         PREC_NONE},
     [TOK_FALSE]       = {parse_literal,  NULL,         PREC_NONE},
@@ -606,6 +621,58 @@ static Node* parse_for_stmt(Parser* parser) {
     return node;
 }
 
+static Node* parse_when_stmt(Parser* parser) {
+    int line = parser->previous.line;
+    int col = parser->previous.col;
+    
+    Node* cond = parse_expression(parser);
+    consume(parser, TOK_COLON, "Expect ':' after condition.");
+    
+    int body_count = 0;
+    Node** body = (Node**)parse_block(parser, &body_count);
+    
+    Node** otherwise_body = NULL;
+    int otherwise_count = 0;
+    if (match(parser, TOK_OTHERWISE)) {
+        consume(parser, TOK_COLON, "Expect ':' after otherwise.");
+        otherwise_body = (Node**)parse_block(parser, &otherwise_count);
+    }
+    
+    Node* node = node_create(parser->arena, NODE_WHEN, line, col);
+    node->when_stmt.condition = cond;
+    node->when_stmt.body = body;
+    node->when_stmt.body_count = body_count;
+    node->when_stmt.otherwise_body = otherwise_body;
+    node->when_stmt.otherwise_count = otherwise_count;
+    return node;
+}
+
+static Node* parse_repeat_stmt(Parser* parser) {
+    int line = parser->previous.line;
+    int col = parser->previous.col;
+    
+    Node* count_expr = parse_expression(parser);
+    
+    consume(parser, TOK_AS, "Expect 'as' after repeat count.");
+    consume(parser, TOK_IDENT, "Expect loop variable name.");
+    
+    char* var_name = (char*)arena_alloc(parser->arena, parser->previous.length + 1);
+    memcpy(var_name, parser->previous.start, parser->previous.length);
+    var_name[parser->previous.length] = '\0';
+    
+    consume(parser, TOK_COLON, "Expect ':' after repeat variable.");
+    
+    int body_count = 0;
+    Node** body = (Node**)parse_block(parser, &body_count);
+    
+    Node* node = node_create(parser->arena, NODE_REPEAT, line, col);
+    node->repeat_stmt.count_expr = count_expr;
+    node->repeat_stmt.loop_var = var_name;
+    node->repeat_stmt.body = body;
+    node->repeat_stmt.body_count = body_count;
+    return node;
+}
+
 static Node* parse_return_stmt(Parser* parser) {
     int line = parser->previous.line;
     int col = parser->previous.col;
@@ -771,6 +838,8 @@ static Node* parse_statement(Parser* parser) {
     if (match(parser, TOK_IF)) return parse_if_stmt(parser);
     if (match(parser, TOK_WHILE)) return parse_while_stmt(parser);
     if (match(parser, TOK_FOR)) return parse_for_stmt(parser);
+    if (match(parser, TOK_WHEN)) return parse_when_stmt(parser);
+    if (match(parser, TOK_REPEAT)) return parse_repeat_stmt(parser);
     if (match(parser, TOK_RETURN)) return parse_return_stmt(parser);
     if (match(parser, TOK_FN)) return parse_fn_def(parser);
     if (match(parser, TOK_STRUCT)) return parse_struct_def(parser);

@@ -323,6 +323,45 @@ static void gen_expr(Codegen* cg, Node* expr) {
             break;
         }
         
+        case NODE_CAST: {
+            gen_expr(cg, expr->cast_expr.expr);
+            Type* src_t = expr->cast_expr.expr->resolved_type;
+            Type* target_t = expr->resolved_type;
+            
+            if (src_t == type_float && target_t == type_int) {
+                emit(cg, "cvttsd2si rax, xmm0");
+            } else if (src_t == type_int && target_t == type_float) {
+                emit(cg, "cvtsi2sd xmm0, rax");
+            } else if ((src_t == type_int || src_t == type_bool) && target_t == type_str) {
+                // Simplified, doesn't really work perfectly without memory management
+                // Just use the runtime functions
+                if (src_t == type_int) {
+                    emit(cg, "mov rcx, rax");
+                    emit(cg, "sub rsp, 32"); emit(cg, "call sk_int_to_cstr"); emit(cg, "add rsp, 32");
+                } else {
+                    emit(cg, "mov rcx, rax");
+                    emit(cg, "sub rsp, 32"); emit(cg, "call sk_bool_to_cstr"); emit(cg, "add rsp, 32");
+                }
+                // String result is in rax. Needs length in r10
+                emit(cg, "push rax");
+                emit(cg, "mov rcx, rax");
+                emit(cg, "sub rsp, 32"); emit(cg, "call sk_cstr_len"); emit(cg, "add rsp, 32");
+                emit(cg, "mov r10, rax");
+                emit(cg, "pop rax");
+            } else if (src_t == type_float && target_t == type_str) {
+                emit(cg, "movq rcx, xmm0");
+                emit(cg, "sub rsp, 32"); emit(cg, "call sk_float_to_cstr"); emit(cg, "add rsp, 32");
+                
+                emit(cg, "push rax");
+                emit(cg, "mov rcx, rax");
+                emit(cg, "sub rsp, 32"); emit(cg, "call sk_cstr_len"); emit(cg, "add rsp, 32");
+                emit(cg, "mov r10, rax");
+                emit(cg, "pop rax");
+            }
+            // Add string parsing to int/float later
+            break;
+        }
+        
         default:
             emit(cg, "; TODO expr kind %d", expr->kind);
             break;
@@ -446,6 +485,81 @@ static void gen_stmt(Codegen* cg, Node* stmt) {
             
             emit(cg, "jmp .L_while_start_%d", lbl_start);
             emit(cg, ".L_while_end_%d:", lbl_end);
+            break;
+        }
+        
+        case NODE_WHEN: {
+            int lbl_otherwise = next_label(cg);
+            int lbl_end = next_label(cg);
+            
+            gen_expr(cg, stmt->when_stmt.condition);
+            emit(cg, "cmp rax, 0");
+            emit(cg, "je .L_otherwise_%d", lbl_otherwise);
+            
+            scope_push(cg->symbols);
+            for (int i = 0; i < stmt->when_stmt.body_count; i++) {
+                gen_stmt(cg, stmt->when_stmt.body[i]);
+            }
+            scope_pop(cg->symbols);
+            emit(cg, "jmp .L_end_%d", lbl_end);
+            
+            emit(cg, ".L_otherwise_%d:", lbl_otherwise);
+            if (stmt->when_stmt.otherwise_body) {
+                scope_push(cg->symbols);
+                for (int i = 0; i < stmt->when_stmt.otherwise_count; i++) {
+                    gen_stmt(cg, stmt->when_stmt.otherwise_body[i]);
+                }
+                scope_pop(cg->symbols);
+            }
+            
+            emit(cg, ".L_end_%d:", lbl_end);
+            break;
+        }
+        
+        case NODE_REPEAT: {
+            int lbl_start = next_label(cg);
+            int lbl_end = next_label(cg);
+            
+            // Evaluate count expression
+            gen_expr(cg, stmt->repeat_stmt.count_expr);
+            
+            // Store count in loop variable
+            Symbol* sym = symbol_lookup(cg->symbols, stmt->repeat_stmt.loop_var);
+            if (!sym) {
+                // Just in case it wasn't registered in scope correctly, register it
+                sym = symbol_define(cg->symbols, stmt->repeat_stmt.loop_var, type_int, 0);
+            }
+            cg->stack_offset += 8;
+            sym->stack_offset = cg->stack_offset;
+            
+            // Initialize counter to 0
+            emit(cg, "mov qword [rbp - %d], 0", sym->stack_offset);
+            
+            // Save the max count in another stack location
+            cg->stack_offset += 8;
+            int limit_offset = cg->stack_offset;
+            emit(cg, "mov [rbp - %d], rax", limit_offset);
+            
+            emit(cg, ".L_repeat_start_%d:", lbl_start);
+            
+            // Check condition: i < limit
+            emit(cg, "mov rax, [rbp - %d]", sym->stack_offset);
+            emit(cg, "cmp rax, [rbp - %d]", limit_offset);
+            emit(cg, "jge .L_repeat_end_%d", lbl_end);
+            
+            scope_push(cg->symbols);
+            for (int i = 0; i < stmt->repeat_stmt.body_count; i++) {
+                gen_stmt(cg, stmt->repeat_stmt.body[i]);
+            }
+            scope_pop(cg->symbols);
+            
+            // Increment counter
+            emit(cg, "mov rax, [rbp - %d]", sym->stack_offset);
+            emit(cg, "inc rax");
+            emit(cg, "mov [rbp - %d], rax", sym->stack_offset);
+            
+            emit(cg, "jmp .L_repeat_start_%d", lbl_start);
+            emit(cg, ".L_repeat_end_%d:", lbl_end);
             break;
         }
         

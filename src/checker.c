@@ -269,6 +269,37 @@ static Type* check_expr(Checker* checker, Node* expr) {
             type = type_unknown;
             break;
         }
+        case NODE_CAST: {
+            Type* src_t = check_expr(checker, expr->cast_expr.expr);
+            char* target_name = expr->cast_expr.target_type;
+            
+            Type* target_t = type_unknown;
+            if (strcmp(target_name, "int") == 0) target_t = type_int;
+            else if (strcmp(target_name, "float") == 0) target_t = type_float;
+            else if (strcmp(target_name, "str") == 0) target_t = type_str;
+            else if (strcmp(target_name, "bool") == 0) target_t = type_bool;
+            else {
+                sk_error(NULL, expr->line, expr->col, "Unknown type '%s' for cast.", target_name);
+                checker->had_error = 1;
+            }
+            
+            // Allow casting between primitive types for now
+            if (src_t != type_unknown && target_t != type_unknown) {
+                if ((src_t == type_int || src_t == type_float || src_t == type_bool) && 
+                    (target_t == type_int || target_t == type_float || target_t == type_bool)) {
+                    // Valid
+                } else if (src_t == type_str || target_t == type_str) {
+                    // Valid to cast string to int/float/bool, or int/float/bool to string
+                } else {
+                    sk_error(NULL, expr->line, expr->col, "Invalid cast from '%s' to '%s'.", 
+                             type_to_string(src_t), type_to_string(target_t));
+                    checker->had_error = 1;
+                }
+            }
+            
+            type = target_t;
+            break;
+        }
         
         default:
             break;
@@ -443,6 +474,47 @@ static void check_stmt(Checker* checker, Node* stmt) {
             
             for (int i = 0; i < stmt->for_stmt.for_body_count; i++) {
                 check_stmt(checker, stmt->for_stmt.for_body[i]);
+            }
+            scope_pop(checker->symbols);
+            break;
+        }
+        
+        case NODE_WHEN: {
+            Type* cond_t = check_expr(checker, stmt->when_stmt.condition);
+            if (cond_t != type_unknown && cond_t != type_bool) {
+                sk_error(NULL, stmt->when_stmt.condition->line, stmt->when_stmt.condition->col, "When condition must be bool.");
+                checker->had_error = 1;
+            }
+            
+            scope_push(checker->symbols);
+            for (int i = 0; i < stmt->when_stmt.body_count; i++) {
+                check_stmt(checker, stmt->when_stmt.body[i]);
+            }
+            scope_pop(checker->symbols);
+            
+            if (stmt->when_stmt.otherwise_body) {
+                scope_push(checker->symbols);
+                for (int i = 0; i < stmt->when_stmt.otherwise_count; i++) {
+                    check_stmt(checker, stmt->when_stmt.otherwise_body[i]);
+                }
+                scope_pop(checker->symbols);
+            }
+            break;
+        }
+        
+        case NODE_REPEAT: {
+            Type* count_t = check_expr(checker, stmt->repeat_stmt.count_expr);
+            if (count_t != type_unknown && count_t != type_int) {
+                sk_error(NULL, stmt->repeat_stmt.count_expr->line, stmt->repeat_stmt.count_expr->col, "Repeat count must be an integer.");
+                checker->had_error = 1;
+            }
+            
+            scope_push(checker->symbols);
+            // Define the loop variable as an integer
+            symbol_define(checker->symbols, stmt->repeat_stmt.loop_var, type_int, 0); // immutable loop var
+            
+            for (int i = 0; i < stmt->repeat_stmt.body_count; i++) {
+                check_stmt(checker, stmt->repeat_stmt.body[i]);
             }
             scope_pop(checker->symbols);
             break;
