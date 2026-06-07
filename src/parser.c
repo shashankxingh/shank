@@ -504,6 +504,7 @@ static Node* parse_outt_stmt(Parser* parser) {
 
 static Node* parse_block(Parser* parser, int* count_out) {
     consume(parser, TOK_NEWLINE, "Expect newline before block.");
+    while (match(parser, TOK_NEWLINE)) {} // Skip empty lines before the indent
     consume(parser, TOK_INDENT, "Expect indentation before block.");
     
     Node** stmts = NULL;
