@@ -87,8 +87,9 @@ static TokenKind identifier_type(Lexer* lexer, const char* start) {
     
     #define MATCH(str, kind) if (len == strlen(str) && memcmp(start, str, len) == 0) return kind;
     
-    MATCH("let", TOK_LET)
+    MATCH("im", TOK_IM)
     MATCH("mut", TOK_MUT)
+    MATCH("out", TOK_OUT)
     MATCH("fn", TOK_FN)
     MATCH("struct", TOK_STRUCT)
     MATCH("enum", TOK_ENUM)

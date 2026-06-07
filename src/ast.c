@@ -57,10 +57,22 @@ void ast_print(Node* node, int indent) {
                 ast_print(node->call.call_args[i], indent + 1);
             }
             break;
-        case NODE_LET:
-            printf("Let(%s%s)\n", node->let_decl.let_mutable ? "mut " : "", node->let_decl.let_name);
-            if (node->let_decl.let_type) ast_print(node->let_decl.let_type, indent + 1);
-            if (node->let_decl.let_value) ast_print(node->let_decl.let_value, indent + 1);
+        case NODE_IM:
+            printf("LetDecl(%s", node->let_decl.let_name);
+            if (node->let_decl.let_type) {
+                printf(": ");
+                ast_print(node->let_decl.let_type, 0);
+            }
+            if (node->let_decl.let_value) {
+                printf(" = ");
+                ast_print(node->let_decl.let_value, 0);
+            }
+            printf(")\n");
+            break;
+        case NODE_OUT:
+            printf("OutStmt(");
+            ast_print(node->expr, 0);
+            printf(")\n");
             break;
         case NODE_ASSIGN:
             printf("Assign\n");

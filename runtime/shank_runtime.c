@@ -10,7 +10,9 @@ void sk_print_float(double value) {
 }
 
 void sk_print_str(const char* data, int64_t len) {
-    fwrite(data, 1, len, stdout);
+    if (data) {
+        printf("%s", data);
+    }
 }
 
 void sk_print_bool(int8_t value) {

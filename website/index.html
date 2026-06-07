@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shank Programming Language</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="nav-brand"><span>🔥</span> Shank</a>
+        <div class="nav-links">
+            <a href="docs.html">Docs</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">v0.1.0 is now available!</div>
+        <h1>Blazing fast.<br>Dead simple.</h1>
+        <p>A modern systems programming language that gives you C-level performance with Python-like syntax. Build native Windows executables effortlessly.</p>
+        
+        <div class="hero-cta">
+            <a href="https://github.com/shashankxingh/shank/raw/main/release/Shank_Setup_v0.1.0_win64.exe" class="btn btn-primary">Download for Windows</a>
+            <a href="docs.html" class="btn btn-secondary">Read the Docs</a>
+        </div>
+
+        <div class="code-window">
+            <div class="code-header">
+                <div class="mac-btn close"></div>
+                <div class="mac-btn minimize"></div>
+                <div class="mac-btn maximize"></div>
+                <div class="code-title">hello.sk</div>
+            </div>
+            <div class="code-content">
+<pre><code><span class="token comment"># A simple Shank program</span>
+<span class="token keyword">fn</span> <span class="token function">main</span>():
+    <span class="token keyword">let</span> name = <span class="token string">"World"</span>
+    <span class="token function">print</span>(<span class="token string">"Hello, "</span> + name + <span class="token string">"!"</span>)
+    
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token function">range</span>(3):
+        <span class="token function">print</span>(i)
+
+<span class="token function">main</span>()</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2 class="section-title">Why Shank?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Blazing Fast</h3>
+                <p>Compiles directly to optimized x86-64 machine code via NASM and GCC. No virtual machines. No interpreters.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🐍</div>
+                <h3>Pythonic Syntax</h3>
+                <p>Forget semicolons and curly braces. Shank uses clean, indentation-based syntax that feels like writing Python.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📦</div>
+                <h3>Standalone Executables</h3>
+                <p>Produce a single, native `.exe` file that you can share anywhere. The Drag-and-Drop compiler makes it effortless.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Shashank Singh. Built with 🔥.</p>
+    </footer>
+</body>
+</html>

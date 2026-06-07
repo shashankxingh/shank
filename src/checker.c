@@ -268,7 +268,7 @@ static void check_stmt(Checker* checker, Node* stmt) {
             check_expr(checker, stmt->expr);
             break;
             
-        case NODE_LET: {
+        case NODE_IM: {
             Type* val_t = type_unknown;
             if (stmt->let_decl.let_value) {
                 val_t = check_expr(checker, stmt->let_decl.let_value);
@@ -310,6 +310,12 @@ static void check_stmt(Checker* checker, Node* stmt) {
             stmt->resolved_type = final_t;
             break;
         }
+        
+        case NODE_OUT: {
+            check_expr(checker, stmt->expr);
+            break;
+        }
+
         
         case NODE_ASSIGN: {
             Type* target_t = check_expr(checker, stmt->assign.assign_target);

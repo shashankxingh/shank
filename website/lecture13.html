@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 13: Arrays - Shank Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Shank Language</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="docs.html" class="active">Documentation</a>
+        </div>
+    </nav>
+    <div class="docs-layout">
+        <aside class="docs-sidebar">
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="lecture1.html">Lecture 1: Flowchart & Pseudocode + Basics</a></li>
+                    <li><a href="lecture2.html">Lecture 2: How a Shank Program Run</a></li>
+                    <li><a href="lecture3.html">Lecture 3: IDE Setup for Coding</a></li>
+                    <li><a href="lecture5.html">Lecture 5: VARIABLES</a></li>
+                    <li><a href="lecture6.html">Lecture 6: DataTypes</a></li>
+                    <li><a href="lecture7.html">Lecture 7: Operators</a></li>
+                    <li><a href="lecture8.html">Lecture 8: Input/Output</a></li>
+                    <li><a href="lecture9.html">Lecture 9: Conditionals</a></li>
+                    <li><a href="lecture10.html">Lecture 10: Loops</a></li>
+                    <li><a href="lecture12.html">Lecture 12: Methods / functions</a></li>
+                    <li><a href="lecture13.html" class="active">Lecture 13: Arrays</a></li>
+                    <li><a href="lecture14.html">Lecture 14: Strings</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="docs-content">
+            <h1>Lecture 13: Arrays</h1>
+            <p>Imagine you are making a game and need to store the scores of 100 players. Creating 100 separate variables (`score1`, `score2`, `score100`) would be a nightmare. When you need to store a collection of items that are all of the same data type, you use an <strong>Array</strong>.</p>
+
+            <h2>1. Declaring and Initializing Arrays</h2>
+            <p>An array is a single variable that holds a list of values. In Shank, an array is declared by adding square brackets <code>[]</code> after the data type.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token comment"># An immutable array of integers</span>
+<span class="token keyword">let</span> fibonacci: <span class="token keyword">int</span>[] = [<span class="token keyword">0</span>, <span class="token keyword">1</span>, <span class="token keyword">1</span>, <span class="token keyword">2</span>, <span class="token keyword">3</span>, <span class="token keyword">5</span>, <span class="token keyword">8</span>]
+
+<span class="token comment"># A mutable array of strings</span>
+<span class="token keyword">mut</span> inventory: <span class="token keyword">str</span>[] = [<span class="token string">"Sword"</span>, <span class="token string">"Shield"</span>, <span class="token string">"Potion"</span>]</code></pre>
+                </div>
+            </div>
+            <p>Important: In basic Shank, arrays are homogeneous. This means an <code>int[]</code> can ONLY hold integers. You cannot mix integers and strings in the same array.</p>
+
+            <h2>2. Accessing Elements (Zero-Indexed)</h2>
+            <p>You access individual items inside the array using their <strong>Index</strong>. In Shank, like in almost all programming languages, arrays are <strong>zero-indexed</strong>. This means the first item is at index 0, the second item is at index 1, and so on.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> colors: <span class="token keyword">str</span>[] = [<span class="token string">"Red"</span>, <span class="token string">"Green"</span>, <span class="token string">"Blue"</span>]
+
+std.println(colors[<span class="token keyword">0</span>])  <span class="token comment"># Prints "Red"</span>
+std.println(colors[<span class="token keyword">2</span>])  <span class="token comment"># Prints "Blue"</span></code></pre>
+                </div>
+            </div>
+
+            <h2>3. Modifying Array Elements</h2>
+            <p>If an array is declared with `mut`, you can change the values at specific indexes after the array has been created.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">mut</span> scores: <span class="token keyword">int</span>[] = [<span class="token keyword">50</span>, <span class="token keyword">60</span>, <span class="token keyword">70</span>]
+scores[<span class="token keyword">1</span>] = <span class="token keyword">95</span>  <span class="token comment"># Changes the 60 to a 95</span>
+std.println(std.format(<span class="token string">"Updated middle score: {}"</span>, scores[<span class="token keyword">1</span>]))</code></pre>
+                </div>
+            </div>
+
+            <h2>4. Iterating over Arrays</h2>
+            <p>The true power of arrays comes when you combine them with loops. You can use a `for` loop to easily process every single element in an array without writing repetitive code.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> prices: <span class="token keyword">float</span>[] = [<span class="token keyword">19.99</span>, <span class="token keyword">5.50</span>, <span class="token keyword">100.00</span>]
+<span class="token keyword">mut</span> total: <span class="token keyword">float</span> = <span class="token keyword">0.0</span>
+
+<span class="token comment"># Iterate directly over the items</span>
+<span class="token keyword">for</span> price <span class="token keyword">in</span> prices:
+    total += price
+
+std.println(std.format(<span class="token string">"Total cost is: {}"</span>, total))</code></pre>
+                </div>
+            </div>
+
+            <h2>5. Out of Bounds Errors</h2>
+            <p>A very common beginner mistake is trying to access an index that doesn't exist. If an array has 3 elements (indexes 0, 1, 2), and you ask for index 3, the computer doesn't know what to do.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> sizes: <span class="token keyword">int</span>[] = [<span class="token keyword">10</span>, <span class="token keyword">20</span>]
+
+<span class="token comment"># RUNTIME ERROR! Index out of bounds. The program will crash.</span>
+<span class="token comment"># std.println(sizes[5]) </span></code></pre>
+                </div>
+            </div>
+            <p>Because Shank is a safe compiled language, it inserts boundary checks to intentionally crash the program if you do this, preventing serious memory corruption bugs.</p>
+
+            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                <a href="lecture12.html" class="btn btn-secondary">&larr; Previous Lecture</a>
+                <a href="lecture14.html" class="btn btn-primary">Next Lecture: Strings &rarr;</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

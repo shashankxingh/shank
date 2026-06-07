@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 9: Conditionals - Shank Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Shank Language</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="docs.html" class="active">Documentation</a>
+        </div>
+    </nav>
+    <div class="docs-layout">
+        <aside class="docs-sidebar">
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="lecture1.html">Lecture 1: Flowchart & Pseudocode + Basics</a></li>
+                    <li><a href="lecture2.html">Lecture 2: How a Shank Program Run</a></li>
+                    <li><a href="lecture3.html">Lecture 3: IDE Setup for Coding</a></li>
+                    <li><a href="lecture5.html">Lecture 5: VARIABLES</a></li>
+                    <li><a href="lecture6.html">Lecture 6: DataTypes</a></li>
+                    <li><a href="lecture7.html">Lecture 7: Operators</a></li>
+                    <li><a href="lecture8.html">Lecture 8: Input/Output</a></li>
+                    <li><a href="lecture9.html" class="active">Lecture 9: Conditionals</a></li>
+                    <li><a href="lecture10.html">Lecture 10: Loops</a></li>
+                    <li><a href="lecture12.html">Lecture 12: Methods / functions</a></li>
+                    <li><a href="lecture13.html">Lecture 13: Arrays</a></li>
+                    <li><a href="lecture14.html">Lecture 14: Strings</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="docs-content">
+            <h1>Lecture 9: Conditionals</h1>
+            <p>Up until now, our code has executed in a straight line, from top to bottom. But real-world logic requires making decisions. "If it is raining, take an umbrella, otherwise, wear sunglasses." Conditionals allow your Shank programs to branch out and execute different blocks of code depending on whether certain conditions are true or false.</p>
+
+            <h2>1. The `if` Statement</h2>
+            <p>The `if` statement is the most basic conditional. It evaluates a boolean expression (a statement that is either `true` or `false`). If the condition is true, the indented block of code underneath it runs. If it is false, the block is completely skipped.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> score: <span class="token keyword">int</span> = <span class="token keyword">85</span>
+
+<span class="token keyword">if</span> score >= <span class="token keyword">50</span>:
+    std.println(<span class="token string">"Congratulations, you passed!"</span>)
+
+std.println(<span class="token string">"This line always prints."</span>)</code></pre>
+                </div>
+            </div>
+            <p><strong>Crucial Rule:</strong> Shank does not use `{}` curly braces to group code. Instead, it uses a colon `:` and <strong>Indentation</strong>. Every line of code that belongs inside the `if` statement must be indented by exactly 4 spaces (or 1 tab). When the indentation returns to normal, the `if` block is over.</p>
+
+            <h2>2. The `else` Statement</h2>
+            <p>What if you want something to happen when the condition is false? You use the `else` keyword. It provides a fallback path.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> password: <span class="token keyword">str</span> = <span class="token string">"1234"</span>
+
+<span class="token keyword">if</span> password == <span class="token string">"secret"</span>:
+    std.println(<span class="token string">"Access Granted."</span>)
+<span class="token keyword">else</span>:
+    std.println(<span class="token string">"Access Denied!"</span>)</code></pre>
+                </div>
+            </div>
+
+            <h2>3. The `elif` Statement</h2>
+            <p>Sometimes you have more than two possibilities. You can chain conditions together using `elif` (short for "else if"). The compiler checks them from top to bottom, and only the <strong>first</strong> true block will run.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> grade: <span class="token keyword">int</span> = <span class="token keyword">75</span>
+
+<span class="token keyword">if</span> grade >= <span class="token keyword">90</span>:
+    std.println(<span class="token string">"Grade: A"</span>)
+<span class="token keyword">elif</span> grade >= <span class="token keyword">80</span>:
+    std.println(<span class="token string">"Grade: B"</span>)
+<span class="token keyword">elif</span> grade >= <span class="token keyword">70</span>:
+    std.println(<span class="token string">"Grade: C"</span>)
+<span class="token keyword">else</span>:
+    std.println(<span class="token string">"Grade: F"</span>)</code></pre>
+                </div>
+            </div>
+
+            <h2>4. Nested Conditionals</h2>
+            <p>You can put `if` statements inside other `if` statements. Just remember to increase your indentation for every new level!</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> has_ticket: <span class="token keyword">bool</span> = <span class="token keyword">true</span>
+<span class="token keyword">let</span> age: <span class="token keyword">int</span> = <span class="token keyword">15</span>
+
+<span class="token keyword">if</span> has_ticket:
+    <span class="token keyword">if</span> age >= <span class="token keyword">18</span>:
+        std.println(<span class="token string">"Welcome to the movie."</span>)
+    <span class="token keyword">else</span>:
+        std.println(<span class="token string">"You are too young for this movie."</span>)
+<span class="token keyword">else</span>:
+    std.println(<span class="token string">"You need a ticket."</span>)</code></pre>
+                </div>
+            </div>
+
+            <h2>5. The `match` Statement (Pattern Matching)</h2>
+            <p>If you have a single variable that you want to compare against many exact values, long `elif` chains can get ugly. Shank provides a much cleaner `match` statement (similar to `switch` in other languages).</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> command: <span class="token keyword">str</span> = <span class="token string">"attack"</span>
+
+<span class="token keyword">match</span> command:
+    <span class="token keyword">case</span> <span class="token string">"attack"</span>:
+        std.println(<span class="token string">"Swinging sword!"</span>)
+    <span class="token keyword">case</span> <span class="token string">"defend"</span>:
+        std.println(<span class="token string">"Raising shield!"</span>)
+    <span class="token keyword">case</span> <span class="token string">"run"</span>:
+        std.println(<span class="token string">"Running away!"</span>)
+    <span class="token keyword">case</span> _:
+        <span class="token comment"># The underscore _ is the default case (like else)</span>
+        std.println(<span class="token string">"Unknown command."</span>)</code></pre>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                <a href="lecture8.html" class="btn btn-secondary">&larr; Previous Lecture</a>
+                <a href="lecture10.html" class="btn btn-primary">Next Lecture: Loops &rarr;</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

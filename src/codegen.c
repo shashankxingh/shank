@@ -237,7 +237,7 @@ static void gen_stmt(Codegen* cg, Node* stmt) {
             gen_expr(cg, stmt->expr);
             break;
             
-        case NODE_LET: {
+        case NODE_IM: {
             Symbol* sym = symbol_define(cg->symbols, stmt->let_decl.let_name, stmt->resolved_type, stmt->let_decl.let_mutable);
             if (sym) {
                 cg->stack_offset += 8; // allocate 8 bytes for variable
@@ -252,6 +252,36 @@ static void gen_stmt(Codegen* cg, Node* stmt) {
                     }
                 }
             }
+            break;
+        }
+        
+        case NODE_OUT: {
+            gen_expr(cg, stmt->expr);
+            if (stmt->expr->resolved_type == type_str) {
+                emit(cg, "mov rcx, rax"); // pointer
+                emit(cg, "mov rdx, r10"); // length
+                emit(cg, "sub rsp, 32"); // shadow space
+                emit(cg, "call sk_print_str");
+                emit(cg, "add rsp, 32");
+            } else if (stmt->expr->resolved_type == type_float) {
+                emit(cg, "movq rcx, xmm0");
+                emit(cg, "sub rsp, 32");
+                emit(cg, "call sk_print_float");
+                emit(cg, "add rsp, 32");
+            } else if (stmt->expr->resolved_type == type_bool) {
+                emit(cg, "mov rcx, rax");
+                emit(cg, "sub rsp, 32");
+                emit(cg, "call sk_print_bool");
+                emit(cg, "add rsp, 32");
+            } else {
+                emit(cg, "mov rcx, rax");
+                emit(cg, "sub rsp, 32");
+                emit(cg, "call sk_print_int");
+                emit(cg, "add rsp, 32");
+            }
+            emit(cg, "sub rsp, 32");
+            emit(cg, "call sk_print_newline");
+            emit(cg, "add rsp, 32");
             break;
         }
         

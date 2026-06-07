@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 8: Input/Output - Shank Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Shank Language</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="docs.html" class="active">Documentation</a>
+        </div>
+    </nav>
+    <div class="docs-layout">
+        <aside class="docs-sidebar">
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="lecture1.html">Lecture 1: Flowchart & Pseudocode + Basics</a></li>
+                    <li><a href="lecture2.html">Lecture 2: How a Shank Program Run</a></li>
+                    <li><a href="lecture3.html">Lecture 3: IDE Setup for Coding</a></li>
+                    <li><a href="lecture5.html">Lecture 5: VARIABLES</a></li>
+                    <li><a href="lecture6.html">Lecture 6: DataTypes</a></li>
+                    <li><a href="lecture7.html">Lecture 7: Operators</a></li>
+                    <li><a href="lecture8.html" class="active">Lecture 8: Input/Output</a></li>
+                    <li><a href="lecture9.html">Lecture 9: Conditionals</a></li>
+                    <li><a href="lecture10.html">Lecture 10: Loops</a></li>
+                    <li><a href="lecture12.html">Lecture 12: Methods / functions</a></li>
+                    <li><a href="lecture13.html">Lecture 13: Arrays</a></li>
+                    <li><a href="lecture14.html">Lecture 14: Strings</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="docs-content">
+            <h1>Lecture 8: Input & Output</h1>
+            <p>Up until now, our programs have been entirely self-contained. They do calculations internally, but they don't talk to the user. A program isn't very interactive if it can't ask for data or show you the result. In this lecture, we explore how Shank handles Output natively.</p>
+
+            <h2>Topic 1: The `out` Keyword</h2>
+            <p>Most languages require importing complex libraries or using bulky function calls like <code>System.out.println()</code> or <code>printf()</code> just to print something. Shank keeps it incredibly simple by introducing a native keyword just for output: <code>out</code>.</p>
+            
+            <h3>Subtopic 1.1: Basic Output</h3>
+            <p>To print text, numbers, or booleans to the console, simply use the <code>out</code> keyword followed by the value or variable.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">out</span> <span class="token string">"Hello World!"</span>  <span class="token comment"># Prints a string</span>
+<span class="token keyword">out</span> <span class="token keyword">12</span>              <span class="token comment"># Prints an integer</span>
+<span class="token keyword">out</span> True            <span class="token comment"># Prints a boolean</span></code></pre>
+                </div>
+            </div>
+
+            <h3>Subtopic 1.2: Printing Variables</h3>
+            <p>You can effortlessly print the contents of a variable by passing the variable name directly to the <code>out</code> keyword.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">im</span> <span class="token keyword">int</span> age = <span class="token keyword">18</span>
+<span class="token keyword">im</span> <span class="token keyword">str</span> name = <span class="token string">"Shashank"</span>
+
+<span class="token keyword">out</span> name
+<span class="token keyword">out</span> age</code></pre>
+                </div>
+            </div>
+
+            <h2>Topic 2: String Interpolation</h2>
+            <p>Often, you will want to mix text with variables inside a single sentence. Instead of clumsily adding strings together, Shank supports native inline formatting similar to f-strings, right out of the box.</p>
+            
+            <h3>Subtopic 2.1: Dynamic Injection</h3>
+            <p>By placing curly braces <code>{}</code> around a variable name inside a string, Shank will automatically inject that variable's value into the text when it is outputted!</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">im</span> <span class="token keyword">int</span> age = <span class="token keyword">18</span>
+<span class="token keyword">im</span> <span class="token keyword">str</span> name = <span class="token string">"Shashank"</span>
+
+<span class="token comment"># Injects 'age' and 'name' seamlessly into the output string</span>
+<span class="token keyword">out</span> <span class="token string">"Hey {name}, your age is {age}!"</span></code></pre>
+                </div>
+            </div>
+
+            <h2>Topic 3: Input: Listening to the User</h2>
+            <p>To get data from the keyboard, we use <code>std.input()</code>. This pauses the program and waits for the user to type something and press Enter. The typed data is ALWAYS returned as a <code>str</code> (String) type.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">out</span> <span class="token string">"Enter your name:"</span>
+<span class="token keyword">im</span> <span class="token keyword">str</span> user_name = std.input()
+<span class="token keyword">out</span> <span class="token string">"Welcome, {user_name}!"</span></code></pre>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                <a href="lecture7.html" class="btn btn-secondary">&larr; Previous Lecture</a>
+                <a href="lecture9.html" class="btn btn-primary">Next Lecture: Conditionals &rarr;</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

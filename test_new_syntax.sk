@@ -1,0 +1,8 @@
+fn main():
+    im int age = 18
+    mut str name = "Shashank"
+    out "Hello World"
+    out age
+    out name
+
+main()

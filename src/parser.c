@@ -55,8 +55,9 @@ static void synchronize(Parser* parser) {
         if (parser->previous.kind == TOK_NEWLINE) return;
         
         switch (parser->current.kind) {
-            case TOK_LET:
+            case TOK_IM:
             case TOK_MUT:
+            case TOK_OUT:
             case TOK_FN:
             case TOK_STRUCT:
             case TOK_IF:
@@ -374,34 +375,36 @@ static Node* parse_type_annotation(Parser* parser) {
     }
 }
 
-static Node* parse_let_decl(Parser* parser) {
-    int is_mutable = 0;
-    if (match(parser, TOK_MUT)) {
-        is_mutable = 1;
-    }
+static Node* parse_im_decl(Parser* parser, int is_mutable) {
+    Node* type_node = parse_type_annotation(parser);
     
     consume(parser, TOK_IDENT, "Expect variable name.");
     char* name = (char*)arena_alloc(parser->arena, parser->previous.length + 1);
     memcpy(name, parser->previous.start, parser->previous.length);
     name[parser->previous.length] = '\0';
     
-    Node* type_node = NULL;
-    if (match(parser, TOK_COLON)) {
-        type_node = parse_type_annotation(parser);
-    }
+    consume(parser, TOK_ASSIGN, "Expect '=' after variable declaration.");
+    Node* value = parse_expression(parser);
     
-    Node* value = NULL;
-    if (match(parser, TOK_ASSIGN)) {
-        value = parse_expression(parser);
-    }
+    consume(parser, TOK_NEWLINE, "Expect newline after declaration.");
     
-    consume(parser, TOK_NEWLINE, "Expect newline after let declaration.");
-    
-    Node* node = node_create(parser->arena, NODE_LET, parser->previous.line, parser->previous.col);
+    Node* node = node_create(parser->arena, NODE_IM, parser->previous.line, parser->previous.col);
     node->let_decl.let_name = name;
     node->let_decl.let_type = type_node;
     node->let_decl.let_value = value;
     node->let_decl.let_mutable = is_mutable;
+    return node;
+}
+
+static Node* parse_out_stmt(Parser* parser) {
+    int line = parser->previous.line;
+    int col = parser->previous.col;
+    
+    Node* expr = parse_expression(parser);
+    consume(parser, TOK_NEWLINE, "Expect newline after out statement.");
+    
+    Node* node = node_create(parser->arena, NODE_OUT, line, col);
+    node->expr = expr;
     return node;
 }
 
@@ -696,7 +699,9 @@ static Node* parse_expression_stmt(Parser* parser) {
 }
 
 static Node* parse_statement(Parser* parser) {
-    if (match(parser, TOK_LET)) return parse_let_decl(parser);
+    if (match(parser, TOK_IM)) return parse_im_decl(parser, 0);
+    if (match(parser, TOK_MUT)) return parse_im_decl(parser, 1);
+    if (match(parser, TOK_OUT)) return parse_out_stmt(parser);
     if (match(parser, TOK_IF)) return parse_if_stmt(parser);
     if (match(parser, TOK_WHILE)) return parse_while_stmt(parser);
     if (match(parser, TOK_FOR)) return parse_for_stmt(parser);

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 7: Operators - Shank Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Shank Language</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="docs.html" class="active">Documentation</a>
+        </div>
+    </nav>
+    <div class="docs-layout">
+        <aside class="docs-sidebar">
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="lecture1.html">Lecture 1: Flowchart & Pseudocode + Basics</a></li>
+                    <li><a href="lecture2.html">Lecture 2: How a Shank Program Run</a></li>
+                    <li><a href="lecture3.html">Lecture 3: IDE Setup for Coding</a></li>
+                    <li><a href="lecture5.html">Lecture 5: VARIABLES</a></li>
+                    <li><a href="lecture6.html">Lecture 6: DataTypes</a></li>
+                    <li><a href="lecture7.html" class="active">Lecture 7: Operators</a></li>
+                    <li><a href="lecture8.html">Lecture 8: Input/Output</a></li>
+                    <li><a href="lecture9.html">Lecture 9: Conditionals</a></li>
+                    <li><a href="lecture10.html">Lecture 10: Loops</a></li>
+                    <li><a href="lecture12.html">Lecture 12: Methods / functions</a></li>
+                    <li><a href="lecture13.html">Lecture 13: Arrays</a></li>
+                    <li><a href="lecture14.html">Lecture 14: Strings</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="docs-content">
+            <h1>Lecture 7: Operators</h1>
+            <p>We know how to store data using variables and data types. But a program that just stores data isn't very useful. We need to manipulate, calculate, and compare that data. This is where <strong>Operators</strong> come in. Operators are special symbols that perform specific operations on one, two, or more variables/values.</p>
+
+            <h2>1. Arithmetic Operators</h2>
+            <p>These are the standard mathematical operators you learned in grade school, used primarily with `int` and `float` data types.</p>
+            <ul>
+                <li><strong>Addition (`+`):</strong> Adds two values.</li>
+                <li><strong>Subtraction (`-`):</strong> Subtracts the right value from the left.</li>
+                <li><strong>Multiplication (`*`):</strong> Multiplies two values.</li>
+                <li><strong>Division (`/`):</strong> Divides the left value by the right.</li>
+                <li><strong>Modulo (`%`):</strong> Returns the remainder of a division. Excellent for checking if a number is even or odd!</li>
+                <li><strong>Power (`**`):</strong> Raises the left value to the power of the right value.</li>
+            </ul>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> a: <span class="token keyword">int</span> = <span class="token keyword">10</span>
+<span class="token keyword">let</span> b: <span class="token keyword">int</span> = <span class="token keyword">3</span>
+
+<span class="token keyword">let</span> sum: <span class="token keyword">int</span> = a + b      <span class="token comment"># 13</span>
+<span class="token keyword">let</span> remainder: <span class="token keyword">int</span> = a % b  <span class="token comment"># 1 (Because 10 divided by 3 leaves a remainder of 1)</span>
+<span class="token keyword">let</span> squared: <span class="token keyword">int</span> = a ** <span class="token keyword">2</span>   <span class="token comment"># 100</span></code></pre>
+                </div>
+            </div>
+
+            <h2>2. Assignment Operators</h2>
+            <p>You already know the basic assignment operator `=`. It assigns the value on the right to the variable on the left. But Shank also supports <strong>compound assignment operators</strong>, which update a variable based on its current value. Note: These require the variable to be declared as `mut`!</p>
+            <ul>
+                <li><code>+=</code> Add and assign (e.g., <code>x += 5</code> is the same as <code>x = x + 5</code>)</li>
+                <li><code>-=</code> Subtract and assign</li>
+                <li><code>*=</code> Multiply and assign</li>
+                <li><code>/=</code> Divide and assign</li>
+            </ul>
+
+            <h2>3. Comparison Operators</h2>
+            <p>Comparison operators look at two values and return a `bool` (`true` or `false`) based on their relationship. These are crucial for conditions and loops.</p>
+            <ul>
+                <li><strong>Equal to (`==`):</strong> Note the double equals! Single `=` is for assignment. Double `==` asks a question: "Are these equal?"</li>
+                <li><strong>Not Equal to (`!=`):</strong></li>
+                <li><strong>Greater than (`>`):</strong></li>
+                <li><strong>Less than (`<`):</strong></li>
+                <li><strong>Greater than or equal to (`>=`):</strong></li>
+                <li><strong>Less than or equal to (`<=`):</strong></li>
+            </ul>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> age: <span class="token keyword">int</span> = <span class="token keyword">18</span>
+<span class="token keyword">let</span> can_vote: <span class="token keyword">bool</span> = age >= <span class="token keyword">18</span>   <span class="token comment"># This evaluates to true</span></code></pre>
+                </div>
+            </div>
+
+            <h2>4. Logical Operators</h2>
+            <p>Logical operators allow you to combine multiple boolean conditions. Shank uses the plain English words `and`, `or`, and `not`.</p>
+            <ul>
+                <li><strong>`and`:</strong> Returns true ONLY if BOTH sides are true.</li>
+                <li><strong>`or`:</strong> Returns true if AT LEAST ONE side is true.</li>
+                <li><strong>`not`:</strong> Flips a boolean. True becomes false, false becomes true.</li>
+            </ul>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> has_ticket: <span class="token keyword">bool</span> = <span class="token keyword">true</span>
+<span class="token keyword">let</span> is_vip: <span class="token keyword">bool</span> = <span class="token keyword">false</span>
+
+<span class="token comment"># They can enter if they have a ticket OR if they are a VIP</span>
+<span class="token keyword">let</span> can_enter: <span class="token keyword">bool</span> = has_ticket <span class="token keyword">or</span> is_vip  <span class="token comment"># true</span></code></pre>
+                </div>
+            </div>
+
+            <h2>5. Operator Precedence (Order of Operations)</h2>
+            <p>Just like in standard math (PEMDAS/BODMAS), Shank processes operators in a specific order. Multiplication and Division happen before Addition and Subtraction. If you want to force an operation to happen first, use parentheses `()`.</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token keyword">let</span> result1: <span class="token keyword">int</span> = <span class="token keyword">10</span> + <span class="token keyword">5</span> * <span class="token keyword">2</span>    <span class="token comment"># Equals 20</span>
+<span class="token keyword">let</span> result2: <span class="token keyword">int</span> = (<span class="token keyword">10</span> + <span class="token keyword">5</span>) * <span class="token keyword">2</span>  <span class="token comment"># Equals 30</span></code></pre>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                <a href="lecture6.html" class="btn btn-secondary">&larr; Previous Lecture</a>
+                <a href="lecture8.html" class="btn btn-primary">Next Lecture: Input/Output &rarr;</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

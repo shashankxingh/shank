@@ -28,12 +28,9 @@ function activate(context) {
         let workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(filePath));
         let cwd = workspaceFolder ? workspaceFolder.uri.fsPath : path.dirname(filePath);
         
-        // Ensure shankc.exe is run. If it's in the workspace root, try to use it.
-        // For simplicity, we assume shankc.exe is either in PATH or in the workspace root.
-        let compilerPath = '.\\shankc.exe'; 
-        
-        // Handle path quoting for powershell
-        let safeFilePath = `"${filePath}"`;
+        // We assume the user has installed Shank using the Setup Wizard
+        // which puts the 'shank' command in their global PATH.
+        let runCmd = `shank run "${filePath}"`;
 
         // Create or show the terminal
         let terminal = vscode.window.terminals.find(t => t.name === 'Shank Output');
@@ -45,8 +42,7 @@ function activate(context) {
         }
         
         terminal.show(true);
-        terminal.sendText(`clear`);
-        terminal.sendText(`${compilerPath} run ${safeFilePath}`);
+        terminal.sendText(runCmd);
     });
 
     context.subscriptions.push(runCommand);

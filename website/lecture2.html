@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 2: How a Shank Program Run - Shank Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Shank Language</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="docs.html" class="active">Documentation</a>
+        </div>
+    </nav>
+    <div class="docs-layout">
+        <aside class="docs-sidebar">
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="lecture1.html">Lecture 1: Flowchart & Pseudocode + Basics</a></li>
+                    <li><a href="lecture2.html" class="active">Lecture 2: How a Shank Program Run</a></li>
+                    <li><a href="lecture3.html">Lecture 3: IDE Setup for Coding</a></li>
+                    <li><a href="lecture5.html">Lecture 5: VARIABLES</a></li>
+                    <li><a href="lecture6.html">Lecture 6: DataTypes</a></li>
+                    <li><a href="lecture7.html">Lecture 7: Operators</a></li>
+                    <li><a href="lecture8.html">Lecture 8: Input/Output</a></li>
+                    <li><a href="lecture9.html">Lecture 9: Conditionals</a></li>
+                    <li><a href="lecture10.html">Lecture 10: Loops</a></li>
+                    <li><a href="lecture12.html">Lecture 12: Methods / functions</a></li>
+                    <li><a href="lecture13.html">Lecture 13: Arrays</a></li>
+                    <li><a href="lecture14.html">Lecture 14: Strings</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="docs-content">
+            <h1>Lecture 2: How a Shank Program Runs</h1>
+            <p>In the previous lecture, we learned how to plan our logic and wrote our first basic Shank program. But what actually happens when you ask the computer to run your Shank code? It isn't magic! In this lecture, we will peek under the hood and understand the lifecycle of a Shank program, from plain text to a native executable.</p>
+
+            <h2>1. The Compilation Pipeline</h2>
+            <p>Shank is a <strong>compiled</strong> language. Unlike interpreted languages (such as Python or JavaScript) which read and execute source code line-by-line at runtime, Shank translates your entire code into machine language before it ever runs. This translation process is called Compilation, and it happens in several distinct stages:</p>
+
+            <h3>Stage A: Lexical Analysis (Lexing)</h3>
+            <p>First, the compiler reads your source code (the <code>.shnk</code> file) as a massive string of characters. The Lexer breaks these characters down into meaningful chunks called <strong>tokens</strong>. For example, the code <code>let x = 5</code> is converted into tokens like <code>[KEYWORD_LET]</code>, <code>[IDENTIFIER(x)]</code>, <code>[EQUALS]</code>, <code>[NUMBER(5)]</code>.</p>
+
+            <h3>Stage B: Parsing (Syntax Analysis)</h3>
+            <p>The parser takes the stream of tokens and groups them into a structure called an Abstract Syntax Tree (AST). This tree represents the grammatical structure of your program. If you forget to indent properly, or if you write <code>let = x 5</code>, the parser will fail and throw a <strong>Syntax Error</strong>.</p>
+
+            <h3>Stage C: Semantic Analysis</h3>
+            <p>Once the tree is built, the compiler checks the meaning of the code. It verifies types (e.g., ensuring you don't try to divide a string by an integer) and checks if variables are declared before they are used. Shank is strictly typed, so this phase is critical for safety.</p>
+
+            <h3>Stage D: Code Generation (NASM)</h3>
+            <p>If your code passes all checks, the Shank compiler generates Assembly Code. Specifically, it targets the x86-64 architecture and generates NASM (Netwide Assembler) syntax. Assembly language is a low-level programming language that is very close to machine code.</p>
+
+            <h3>Stage E: Assembling and Linking (GCC)</h3>
+            <p>Finally, an assembler converts the NASM code into object files (binary code), and a linker (like GCC) combines your object files with the standard library to create the final <code>.exe</code> (on Windows) or ELF binary (on Linux).</p>
+
+            <h2>2. Static vs Dynamic Typing</h2>
+            <p>A crucial aspect of how Shank operates is its type system. Shank uses <strong>Static Typing</strong>. This means that the types of all variables are known at <em>compile-time</em> (before the program runs).</p>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="mac-btn close"></span>
+                    <span class="mac-btn minimize"></span>
+                    <span class="mac-btn maximize"></span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="token comment"># Valid Shank code</span>
+<span class="token keyword">mut</span> age: <span class="token keyword">int</span> = <span class="token keyword">20</span>
+age = <span class="token keyword">21</span>
+
+<span class="token comment"># Compile-time ERROR! </span>
+<span class="token comment"># You cannot assign a string to an integer variable.</span>
+age = <span class="token string">"twenty-two"</span></code></pre>
+                </div>
+            </div>
+            <p>In contrast, dynamically typed languages (like Python) figure out types on the fly during execution, which can lead to unexpected crashes while the program is running.</p>
+
+            <h2>3. Memory Layout: Stack vs Heap</h2>
+            <p>When you run the compiled executable, the operating system allocates memory for your program. Shank manages two primary areas of memory:</p>
+            <ul>
+                <li><strong>The Stack:</strong> Fast, organized, and limited. Local variables and function calls are stored here. When a function finishes, its stack memory is automatically cleared.</li>
+                <li><strong>The Heap:</strong> Large, flexible, but slower. Used for dynamic data structures whose size might change at runtime (like large dynamic arrays or complex objects). Memory here must be managed carefully.</li>
+            </ul>
+
+            <h2>4. Compile-Time vs Run-Time Errors</h2>
+            <p>As a programmer, you will encounter bugs. It is helpful to categorize them:</p>
+            <ul>
+                <li><strong>Compile-Time Errors:</strong> The compiler refuses to generate an executable. Examples include syntax errors (wrong indentation), type mismatches, or using undeclared variables. These are "good" errors because they are caught early.</li>
+                <li><strong>Run-Time Errors:</strong> The code compiles perfectly, but crashes when you run it. Examples include dividing by zero, or trying to access the 100th element of a 5-element array. These are harder to debug.</li>
+            </ul>
+
+            <h2>5. Summary</h2>
+            <p>Writing Shank code is just the first step. The compiler acts as a strict translator, ensuring your code is structurally and logically sound before handing it over to the assembler and linker. Understanding this pipeline will make you much better at deciphering error messages and writing efficient code.</p>
+
+            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                <a href="lecture1.html" class="btn btn-secondary">&larr; Previous Lecture</a>
+                <a href="lecture3.html" class="btn btn-primary">Next Lecture: IDE Setup &rarr;</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
