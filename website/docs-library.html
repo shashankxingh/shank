@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standard Library — Shank 0.1 Documentation</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>⚡</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs-tutorial.html">Documentation</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Getting Started</div>
+                <a href="docs-tutorial.html">The Shank Tutorial</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Language Reference</div>
+                <a href="docs-reference.html">Lexical & Execution Model</a>
+                <a href="docs-control-flow-ref.html">Control Flow</a>
+                <a href="docs-library.html" class="active">Standard Library & Built-ins</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Standard Library & Built-ins</h1>
+            <p class="subtitle">A reference manual for Shank's native runtime functions, I/O operations, and type coercion mechanisms.</p>
+
+            <h2>Output Functions</h2>
+            <p>Shank provides three highly optimized built-in keywords for streaming data to the standard output buffer. Unlike standard functions, these operate as native language keywords integrated directly into the parser.</p>
+
+            <h3><code class="inline">out</code> (Print with Newline)</h3>
+            <p>The standard output mechanism. It prints a formatted representation of any primitive type (`int`, `float`, `bool`, `str`) and appends a newline (`\n`).</p>
+<pre><code><span class="kw">out</span> <span class="str">"Compilation finished."</span></code></pre>
+
+            <h3><code class="inline">outt</code> (Print Text Inline)</h3>
+            <p>Identical to `out`, but it does <strong>not</strong> append a newline. Crucial for procedural text generation, such as printing grid matrices.</p>
+<pre><code><span class="kw">repeat</span> <span class="num">5</span>:
+    <span class="kw">outt</span> <span class="str">"*"</span>
+<span class="kw">out</span> <span class="str">""</span> <span class="cm">// Flushes the line</span></code></pre>
+
+            <h3><code class="inline">outc</code> (Print ASCII Character)</h3>
+            <p>A specialized instruction that accepts a 64-bit integer and emits the corresponding single byte ASCII character directly to the standard output stream. Excellent for low-level formatting or procedural rendering without string allocations.</p>
+<pre><code><span class="kw">outc</span> <span class="num">65</span>   <span class="cm">// Prints 'A'</span>
+<span class="kw">outc</span> <span class="num">10</span>   <span class="cm">// Prints a newline '\n'</span></code></pre>
+
+
+            <h2>Type Coercion (Casting)</h2>
+            <p>Because Shank is strictly typed, operations between mismatched types (like concatenating a string and an integer) require explicit casts. The language exposes four global casting functions.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Function</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">str(value)</code></td>
+                        <td>Safely converts integers, floats, or booleans to a heap-allocated string pointer.</td>
+                        <td><code class="inline">str(42)  // "42"</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">int(value)</code></td>
+                        <td>Parses a string into a 64-bit integer, or truncates a float to an integer.</td>
+                        <td><code class="inline">int("100") // 100</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">float(value)</code></td>
+                        <td>Parses a string into a 64-bit double, or elevates an integer to a float.</td>
+                        <td><code class="inline">float(5)   // 5.0</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">bool(value)</code></td>
+                        <td>Evaluates truthiness (e.g. non-zero ints become true, empty strings become false).</td>
+                        <td><code class="inline">bool(1)    // true</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Operators & Arithmetic Constraints</h2>
+            <p>Shank implements rigorous mathematical operator enforcement via the Type Checker (`src/checker.c`).</p>
+            <ul>
+                <li><strong>Arithmetic:</strong> `+`, `-`, `*`, `/`, `%` (Modulus). Note: Modulus operates strictly on `int` types.</li>
+                <li><strong>Relational:</strong> `==`, `!=`, `<`, `>`, `<=`, `>=`. Relational operators return a `bool` and require identical types on both boundaries.</li>
+                <li><strong>Logical:</strong> `and`, `or`, `not`. These operators accept only `bool` values, operating via heavily optimized bitwise assembly paths (`and rax, rcx`) without branching logic.</li>
+            </ul>
+
+            <div class="page-nav">
+                <a href="docs-control-flow-ref.html">← Control Flow</a>
+                <a href="#"></a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>

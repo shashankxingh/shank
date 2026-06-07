@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Flow — Shank 0.1 Documentation</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>⚡</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs-tutorial.html">Documentation</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Getting Started</div>
+                <a href="docs-tutorial.html">The Shank Tutorial</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Language Reference</div>
+                <a href="docs-reference.html">Lexical & Execution Model</a>
+                <a href="docs-control-flow-ref.html" class="active">Control Flow</a>
+                <a href="docs-library.html">Standard Library & Built-ins</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Control Flow</h1>
+            <p class="subtitle">Detailed guide to branching logic and looping mechanisms in Shank.</p>
+
+            <h2>Conditional Branching</h2>
+            <p>Shank provides a robust mechanism for conditionally executing code using the <code class="inline">when</code>, <code class="inline">elif</code>, and <code class="inline">otherwise</code> keywords.</p>
+
+            <h3>The <code class="inline">when</code> Statement</h3>
+            <p>A <code class="inline">when</code> statement requires a boolean expression followed by a colon. The indented block below it is executed only if the expression evaluates to `true`.</p>
+
+<pre><code><span class="kw">im</span> <span class="type">int</span> age <span class="op">=</span> <span class="num">18</span>
+
+<span class="kw">when</span> age <span class="op">>=</span> <span class="num">18</span>:
+    <span class="kw">out</span> <span class="str">"Access granted."</span></code></pre>
+
+            <h3><code class="inline">elif</code> and <code class="inline">otherwise</code></h3>
+            <p>You can chain multiple conditions using <code class="inline">elif</code> (short for "else if"). If all preceding conditions fail, the <code class="inline">otherwise</code> block acts as the fallback execution path.</p>
+
+<pre><code><span class="kw">im</span> <span class="type">int</span> score <span class="op">=</span> <span class="num">85</span>
+
+<span class="kw">when</span> score <span class="op">>=</span> <span class="num">90</span>:
+    <span class="kw">out</span> <span class="str">"Grade: A"</span>
+<span class="kw">elif</span> score <span class="op">>=</span> <span class="num">80</span>:
+    <span class="kw">out</span> <span class="str">"Grade: B"</span>
+<span class="kw">elif</span> score <span class="op">>=</span> <span class="num">70</span>:
+    <span class="kw">out</span> <span class="str">"Grade: C"</span>
+<span class="kw">otherwise</span>:
+    <span class="kw">out</span> <span class="str">"Grade: F"</span></code></pre>
+
+            <div class="warn">
+                <strong>Type Enforcement:</strong> Conditions in `when` and `elif` clauses must explicitly resolve to a `bool`. Trying to evaluate an integer like `when 1:` will trigger a compiler type error.
+            </div>
+
+            <h2>Looping Construct: <code class="inline">repeat</code></h2>
+            <p>Instead of traditional C-style `for` loops or `while` loops, Shank intentionally implements a specialized integer-bound loop via the <code class="inline">repeat</code> keyword. This enforces bounded iteration and prevents accidental infinite loops.</p>
+
+            <h3>Basic Repetition</h3>
+            <p>To execute a block of code a specific number of times, provide an integer value to `repeat`.</p>
+
+<pre><code><span class="kw">repeat</span> <span class="num">3</span>:
+    <span class="kw">out</span> <span class="str">"Processing..."</span></code></pre>
+
+            <h3>Accessing the Iteration Variable</h3>
+            <p>You can bind the current iteration index to a local, immutable variable using the <code class="inline">as</code> keyword. The index starts at `0` and increments by `1` until it reaches `N - 1`.</p>
+
+<pre><code><span class="kw">repeat</span> <span class="num">5</span> <span class="kw">as</span> i:
+    <span class="kw">out</span> <span class="str">"Iteration: {i}"</span></code></pre>
+
+            <p>Output:</p>
+<pre><code>Iteration: 0
+Iteration: 1
+Iteration: 2
+Iteration: 3
+Iteration: 4</code></pre>
+
+            <h3>Nested Loops and Variable Scoping</h3>
+            <p>When nesting `repeat` loops, iteration variables (`i`, `j`, etc.) are securely scoped to their respective indented blocks. They do not leak into the outer scope after the block terminates.</p>
+
+<pre><code><span class="kw">im</span> <span class="type">int</span> size <span class="op">=</span> <span class="num">3</span>
+
+<span class="kw">repeat</span> size <span class="kw">as</span> row:
+    <span class="kw">repeat</span> size <span class="kw">as</span> col:
+        <span class="kw">when</span> row <span class="op">==</span> col:
+            <span class="kw">outt</span> <span class="str">"*"</span>
+        <span class="kw">otherwise</span>:
+            <span class="kw">outt</span> <span class="str">"-"</span>
+    <span class="kw">out</span> <span class="str">""</span></code></pre>
+
+            <p>Output:</p>
+<pre><code>*--
+-*-
+--*</code></pre>
+
+            <div class="page-nav">
+                <a href="docs-reference.html">← Lexical & Execution Model</a>
+                <a href="docs-library.html">Standard Library →</a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Reference — Shank 0.1 Documentation</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>⚡</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs-tutorial.html">Documentation</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Getting Started</div>
+                <a href="docs-tutorial.html">The Shank Tutorial</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Language Reference</div>
+                <a href="docs-reference.html" class="active">Lexical & Execution Model</a>
+                <a href="docs-control-flow-ref.html">Control Flow</a>
+                <a href="docs-library.html">Standard Library & Built-ins</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Lexical & Execution Model</h1>
+            <p class="subtitle">A formal specification of Shank's syntax boundaries and compiler pipeline.</p>
+
+            <h2>Lexical Structure</h2>
+            <p>Shank source files must be encoded in UTF-8. The lexer processes the source code into a stream of tokens, discarding whitespace and comments while preserving indentation semantics.</p>
+
+            <h3>1. Indentation</h3>
+            <p>Like Python, Shank uses whitespace indentation to define code blocks (scope) instead of braces `{ }`. An increase in indentation generates an `INDENT` token, and a decrease generates a `DEDENT` token. Mixing spaces and tabs on the same line is strictly prohibited and will trigger a lexer error.</p>
+            <p>A standard indentation level is typically <strong>4 spaces</strong>.</p>
+
+            <h3>2. Comments</h3>
+            <p>Comments begin with the hash `#` character and extend to the end of the physical line.</p>
+<pre><code><span class="cm"># This entire line is ignored by the lexer</span>
+<span class="kw">im</span> <span class="type">int</span> x <span class="op">=</span> <span class="num">5</span>  <span class="cm"># This is an inline comment</span></code></pre>
+
+            <h3>3. Keywords</h3>
+            <p>The following identifiers are reserved words and cannot be used as variable or function names:</p>
+            <ul>
+                <li><code>im</code>, <code>mut</code></li>
+                <li><code>int</code>, <code>float</code>, <code>str</code>, <code>bool</code></li>
+                <li><code>when</code>, <code>elif</code>, <code>otherwise</code></li>
+                <li><code>repeat</code>, <code>as</code></li>
+                <li><code>fn</code>, <code>return</code></li>
+                <li><code>and</code>, <code>or</code>, <code>not</code></li>
+                <li><code>true</code>, <code>false</code></li>
+                <li><code>out</code>, <code>outt</code>, <code>outc</code></li>
+            </ul>
+
+            <h2>The Data Model</h2>
+            <p>Shank provides four primitive data types. Variables are strictly typed at compile-time.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Keyword</th>
+                        <th>Memory Representation</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Integer</td>
+                        <td><code class="inline">int</code></td>
+                        <td>64-bit signed integer (QWORD)</td>
+                        <td><code class="inline">42</code></td>
+                    </tr>
+                    <tr>
+                        <td>Floating-point</td>
+                        <td><code class="inline">float</code></td>
+                        <td>64-bit IEEE 754 double-precision</td>
+                        <td><code class="inline">3.14159</code></td>
+                    </tr>
+                    <tr>
+                        <td>Boolean</td>
+                        <td><code class="inline">bool</code></td>
+                        <td>8-bit unsigned integer (0 = false, 1 = true)</td>
+                        <td><code class="inline">true</code></td>
+                    </tr>
+                    <tr>
+                        <td>String</td>
+                        <td><code class="inline">str</code></td>
+                        <td>64-bit pointer to a null-terminated UTF-8 byte array</td>
+                        <td><code class="inline">"hello"</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Execution Pipeline</h2>
+            <p>Shank is not interpreted. It follows a rigorous compilation pipeline directly to machine code.</p>
+
+            <ol>
+                <li><strong>Lexing:</strong> `src/lexer.c` tokenizes the source text.</li>
+                <li><strong>Parsing:</strong> `src/parser.c` constructs an Abstract Syntax Tree (AST) using Recursive Descent.</li>
+                <li><strong>Type Checking:</strong> `src/checker.c` traverses the AST, resolving variable scopes, enforcing `im` mutability constraints, and validating operator type safety.</li>
+                <li><strong>Code Generation:</strong> `src/codegen.c` performs a single-pass translation of the verified AST into NASM-compatible x86-64 assembly instructions.</li>
+                <li><strong>Assembling & Linking:</strong> The compiler invokes the bundled `nasm` assembler to create `.obj` files, and then links them against the C runtime using `gcc` to produce a standalone executable.</li>
+            </ol>
+
+            <div class="note">
+                <strong>Memory Architecture Insight:</strong> During the Code Generation phase, the compiler dynamically calculates the maximum depth of nested variables within a function. It then emits a single stack reservation instruction (e.g., <code>sub rsp, 280</code>) at the function prologue, ensuring highly efficient and robust memory allocation without dynamic heap overhead.
+            </div>
+
+            <div class="page-nav">
+                <a href="docs-tutorial.html">← The Shank Tutorial</a>
+                <a href="docs-control-flow-ref.html">Control Flow →</a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>

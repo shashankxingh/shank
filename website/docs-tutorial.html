@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Shank Tutorial — Shank 0.1 Documentation</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>⚡</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs-tutorial.html">Documentation</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Getting Started</div>
+                <a href="docs-tutorial.html" class="active">The Shank Tutorial</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Language Reference</div>
+                <a href="docs-reference.html">Lexical & Execution Model</a>
+                <a href="docs-control-flow-ref.html">Control Flow</a>
+                <a href="docs-library.html">Standard Library & Built-ins</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>The Shank Tutorial</h1>
+            <p class="subtitle">A comprehensive introduction to writing, compiling, and running Shank.</p>
+
+            <p>Shank is an exceptionally lean, statically typed programming language designed to strip away the boilerplate and complexity of modern systems programming. With an indentation-based syntax heavily inspired by Python and a custom-built x86-64 backend that emits raw Windows assembly, Shank is built for raw performance without sacrificing developer ergonomics.</p>
+
+            <p>This tutorial will guide you through setting up your environment, understanding Shank's execution semantics, and writing robust programs.</p>
+
+            <h2>1. Installation and Setup</h2>
+            <p>Shank requires no runtime environments, no interpreters, and no heavy SDKs. The compiler itself is a lightweight, zero-dependency executable.</p>
+            
+            <h3>Using the Portable Release</h3>
+            <p>The easiest way to get started is by downloading the standalone `.zip` distribution.</p>
+            <ol>
+                <li>Download the `shank-v0.1-win64.zip` from the homepage.</li>
+                <li>Extract the archive to a permanent directory (e.g., `C:\shank`).</li>
+                <li>Add `C:\shank` to your System's `PATH` environment variable.</li>
+                <li>Open a new terminal and type <code class="inline">shankc help</code>. If the help menu appears, your installation is successful.</li>
+            </ol>
+
+            <div class="note">
+                <strong>Note:</strong> The portable release contains <code>shankc.exe</code> along with deeply integrated, stripped-down versions of the MinGW-w64 GCC toolchain and NASM. These are required by the backend to correctly assemble and link the generated x86-64 machine code without forcing you to install Microsoft Visual C++ Build Tools.
+            </div>
+
+            <h2>2. The Compiler CLI</h2>
+            <p>The `shankc` command-line interface provides everything you need to check, compile, and run your code.</p>
+
+            <ul>
+                <li><code class="inline">shankc run &lt;file.sk&gt;</code>: Compiles the source file, executes the binary, and automatically cleans up the generated `.exe` after the process exits. This is recommended for local development.</li>
+                <li><code class="inline">shankc build &lt;file.sk&gt; [-o output]</code>: Compiles the source code into a permanent `.exe` executable file ready for distribution.</li>
+                <li><code class="inline">shankc emit &lt;file.sk&gt; [-o output.asm]</code>: Stops compilation before the assembly phase and emits the raw NASM-compatible x86-64 assembly instructions to a file. Useful for debugging compiler backend logic.</li>
+                <li><code class="inline">shankc check &lt;file.sk&gt;</code>: Runs the Lexer, Parser, and Semantic Analyzer (Type Checker) without emitting code. Used for rapid syntax validation.</li>
+            </ul>
+
+            <h2>3. Hello, World!</h2>
+            <p>Let's write our first Shank program. Create a file named `hello.sk`.</p>
+
+<pre><code><span class="cm"># This is a comment in Shank</span>
+<span class="kw">out</span> <span class="str">"Hello, World!"</span></code></pre>
+
+            <p>To run this code, execute the following command in your terminal:</p>
+
+<pre><code>$ shankc run hello.sk
+Hello, World!</code></pre>
+
+            <p>Notice that there are no `main` functions, no class wrappers, and no semicolons. Shank evaluates statements from the top of the file downward, wrapping them automatically into a hidden `shank_main` entry point during assembly generation.</p>
+
+            <h2>4. Variables and Strict Mutability</h2>
+            <p>Shank is statically typed, meaning variable types are strictly enforced at compile time. However, unlike Python, Shank places a heavy emphasis on <strong>memory mutability correctness</strong>. All variables must be explicitly declared as either Immutable (`im`) or Mutable (`mut`).</p>
+
+            <h3>Immutable Variables</h3>
+            <p>By default, variables should be declared as `im`. Once an `im` variable is assigned a value in memory, it can <strong>never</strong> be altered. Attempting to assign a new value to an `im` variable results in a fatal compile-time error.</p>
+
+<pre><code><span class="kw">im</span> <span class="type">int</span> limit <span class="op">=</span> <span class="num">100</span>
+<span class="kw">out</span> <span class="str">"The limit is {limit}"</span>
+
+<span class="cm"># Compile Error: Cannot assign to immutable variable 'limit'</span>
+limit <span class="op">=</span> <span class="num">200</span></code></pre>
+
+            <h3>Mutable Variables</h3>
+            <p>If you intend to modify the memory address of a variable (such as a counter in a loop), you must explicitly flag it with `mut`.</p>
+
+<pre><code><span class="kw">mut</span> <span class="type">int</span> counter <span class="op">=</span> <span class="num">0</span>
+
+<span class="kw">repeat</span> <span class="num">5</span> <span class="kw">as</span> i:
+    counter <span class="op">=</span> counter <span class="op">+</span> i
+
+<span class="kw">out</span> counter <span class="cm">// Prints 10</span></code></pre>
+
+            <div class="note">
+                <strong>Memory Architecture:</strong> Under the hood, both `im` and `mut` variables are allocated to the x86-64 stack frame via the Base Pointer (`rbp`). The difference is purely semantic and enforced heavily by the `src/checker.c` Type Analyzer during the AST traversal phase.
+            </div>
+
+            <h2>5. Where to Go From Here</h2>
+            <p>You now have a foundational understanding of compiling and writing basic Shank code.</p>
+            <p>To master the language, proceed to the <a href="docs-reference.html">Language Reference</a> to understand the execution model, or dive straight into <a href="docs-control-flow-ref.html">Control Flow</a> to learn about `when`, `otherwise`, and the highly specialized `repeat` loop.</p>
+
+            <div class="page-nav">
+                <a href="#"></a>
+                <a href="docs-reference.html">Language Reference →</a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>
