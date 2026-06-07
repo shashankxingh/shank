@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditionals — Shank</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>🔥</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs.html">Docs</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Getting Started</div>
+                <a href="docs.html">Overview</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Language Basics</div>
+                <a href="docs-variables.html">Variables</a>
+                <a href="docs-types.html">Data Types</a>
+                <a href="docs-operators.html">Operators</a>
+                <a href="docs-output.html">Output</a>
+                <a href="docs-input.html">Input</a>
+                <a href="docs-strings.html">Strings</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Control Flow</div>
+                <a href="docs-control-flow.html" class="active">when / otherwise</a>
+                <a href="docs-loops.html">repeat</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Functions</div>
+                <a href="docs-functions.html">Functions</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Type System</div>
+                <a href="docs-casting.html">Type Casting</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Conditionals</h1>
+            <p class="subtitle">Branching with <code>when</code> and <code>otherwise</code>.</p>
+
+            <h2>when</h2>
+            <p>Executes its body if the condition is true.</p>
+            <pre><code><span class="kw">when</span> &lt;condition&gt;:
+    &lt;indented body&gt;</code></pre>
+            <pre><code><span class="kw">when</span> x <span class="op">&gt;</span> <span class="num">10</span>:
+    <span class="kw">out</span> <span class="str">"big number"</span></code></pre>
+
+            <h2>otherwise</h2>
+            <p>The fallback block. Executes when the preceding <code>when</code> condition is false.</p>
+            <pre><code><span class="kw">im</span> <span class="type">int</span> age <span class="op">=</span> <span class="num">15</span>
+
+<span class="kw">when</span> age <span class="op">&gt;=</span> <span class="num">18</span>:
+    <span class="kw">out</span> <span class="str">"Adult"</span>
+<span class="kw">otherwise</span>:
+    <span class="kw">out</span> <span class="str">"Minor"</span></code></pre>
+
+            <h2>Nesting</h2>
+            <p>You can nest <code>when</code>/<code>otherwise</code> blocks inside each other.</p>
+            <pre><code><span class="kw">when</span> x <span class="op">&gt;</span> <span class="num">100</span>:
+    <span class="kw">out</span> <span class="str">"huge"</span>
+<span class="kw">otherwise</span>:
+    <span class="kw">when</span> x <span class="op">&gt;</span> <span class="num">50</span>:
+        <span class="kw">out</span> <span class="str">"medium"</span>
+    <span class="kw">otherwise</span>:
+        <span class="kw">out</span> <span class="str">"small"</span></code></pre>
+
+            <h2>Conditions</h2>
+            <p>The condition must evaluate to a <code>bool</code>. You can use comparison operators (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>) and combine them with logical operators (<code>and</code>, <code>or</code>, <code>not</code>).</p>
+            <pre><code><span class="kw">when</span> score <span class="op">&gt;=</span> <span class="num">90</span> <span class="op">and</span> passed <span class="op">==</span> <span class="kw">true</span>:
+    <span class="kw">out</span> <span class="str">"Excellent"</span></code></pre>
+
+            <div class="warn-box">
+                Shank does not have <code>elif</code> in v0.1. Use nested <code>when</code>/<code>otherwise</code> blocks instead.
+            </div>
+
+            <div class="page-nav">
+                <a href="docs-strings.html" class="prev">← Strings</a>
+                <a href="docs-loops.html" class="next">Loops →</a>
+            </div>
+
+            <footer>
+                <p>&copy; 2025 Shank Programming Language</p>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>

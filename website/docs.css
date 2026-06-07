@@ -1,0 +1,224 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg: #0f1117;
+    --bg-secondary: #161920;
+    --bg-code: #1a1d27;
+    --border: #2a2d3a;
+    --text: #c9d1d9;
+    --text-secondary: #8b949e;
+    --text-heading: #e6edf3;
+    --accent: #58a6ff;
+    --accent-dim: rgba(88,166,255,0.15);
+    --green: #7ee787;
+    --orange: #d29922;
+    --purple: #bc8cff;
+    --red: #ff7b72;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'Fira Code', Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ---- TOP BAR ---- */
+.topbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 1.5rem; height: 52px;
+    background: rgba(15,17,23,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+}
+.topbar-logo {
+    font-weight: 700; font-size: 1.1rem;
+    color: var(--text-heading); text-decoration: none;
+    display: flex; align-items: center; gap: 0.4rem;
+}
+.topbar-logo span { font-size: 1.2rem; }
+.topbar-links { display: flex; gap: 1.5rem; }
+.topbar-links a {
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 0.9rem; font-weight: 500;
+    transition: color 0.2s;
+}
+.topbar-links a:hover { color: var(--text-heading); }
+
+/* ---- LAYOUT ---- */
+.wrapper {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    max-width: 1160px;
+    margin: 0 auto;
+}
+
+/* ---- SIDEBAR ---- */
+.sidebar {
+    position: sticky; top: 52px; align-self: start;
+    height: calc(100vh - 52px);
+    overflow-y: auto; padding: 1.5rem 1rem;
+    border-right: 1px solid var(--border);
+    font-size: 0.88rem;
+}
+.sidebar-section { margin-bottom: 1.5rem; }
+.sidebar-title {
+    font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-secondary); margin-bottom: 0.5rem;
+}
+.sidebar a {
+    display: block; padding: 0.25rem 0.6rem;
+    border-radius: 4px; text-decoration: none;
+    color: var(--text-secondary); transition: all 0.15s;
+}
+.sidebar a:hover { color: var(--text-heading); background: var(--accent-dim); }
+.sidebar a.active { color: var(--accent); background: var(--accent-dim); }
+
+/* ---- CONTENT ---- */
+.content { padding: 2.5rem 3rem 6rem; min-width: 0; }
+
+.content h1 {
+    font-size: 2rem; font-weight: 700; color: var(--text-heading);
+    margin-bottom: 0.5rem; letter-spacing: -0.02em;
+}
+.content .subtitle {
+    font-size: 1.05rem; color: var(--text-secondary);
+    margin-bottom: 2.5rem; border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+}
+
+.content h2 {
+    font-size: 1.45rem; font-weight: 700; color: var(--text-heading);
+    margin-top: 3rem; margin-bottom: 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+}
+.content h3 {
+    font-size: 1.1rem; font-weight: 600; color: var(--text-heading);
+    margin-top: 2rem; margin-bottom: 0.6rem;
+}
+.content p { margin-bottom: 1rem; }
+.content ul, .content ol { margin: 0 0 1rem 1.5rem; }
+.content li { margin-bottom: 0.3rem; }
+
+code {
+    font-family: var(--mono); font-size: 0.88em;
+    background: var(--bg-code); padding: 0.15em 0.4em;
+    border-radius: 4px; color: #e6edf3;
+}
+
+/* ---- CODE BLOCKS ---- */
+pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    overflow-x: auto;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.65;
+}
+pre code {
+    background: none; padding: 0;
+    font-size: inherit; color: #e6edf3;
+}
+
+/* syntax highlighting */
+.kw   { color: #ff7b72; }
+.type { color: #79c0ff; }
+.fn   { color: #d2a8ff; }
+.str  { color: #a5d6ff; }
+.num  { color: #79c0ff; }
+.op   { color: #c9d1d9; }
+.cm   { color: #8b949e; font-style: italic; }
+
+/* ---- NOTE / WARNING BOXES ---- */
+.note {
+    background: rgba(88,166,255,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 0.8rem 1rem; margin: 1rem 0 1.5rem;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.92rem;
+}
+.note strong { color: var(--accent); }
+.warn {
+    background: rgba(210,153,34,0.08);
+    border-left: 3px solid var(--orange);
+    padding: 0.8rem 1rem; margin: 1rem 0 1.5rem;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.92rem;
+}
+.warn strong { color: var(--orange); }
+
+/* ---- TABLE ---- */
+table {
+    width: 100%; border-collapse: collapse;
+    margin: 1rem 0 1.5rem; font-size: 0.92rem;
+}
+th, td {
+    padding: 0.6rem 1rem; text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+th { color: var(--text-heading); font-weight: 600; font-size: 0.85rem; }
+
+/* ---- PAGE NAV ---- */
+.page-nav {
+    display: flex; justify-content: space-between;
+    margin-top: 3rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+.page-nav a {
+    color: var(--accent); text-decoration: none;
+    font-weight: 500; font-size: 0.95rem;
+    transition: opacity 0.2s;
+}
+.page-nav a:hover { opacity: 0.8; }
+
+/* ---- FOOTER ---- */
+.footer {
+    text-align: center; padding: 2rem;
+    color: var(--text-secondary); font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+}
+
+/* ---- DOCS INDEX GRID ---- */
+.docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem; margin-top: 1.5rem;
+}
+.docs-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.5rem;
+    text-decoration: none; color: var(--text);
+    transition: border-color 0.2s, transform 0.2s;
+}
+.docs-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+.docs-card h3 {
+    color: var(--text-heading); margin: 0 0 0.4rem;
+    font-size: 1.05rem;
+}
+.docs-card p {
+    color: var(--text-secondary); margin: 0;
+    font-size: 0.9rem; line-height: 1.5;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 768px) {
+    .wrapper { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .content { padding: 1.5rem; }
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Types — Shank</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>🔥</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs.html">Docs</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Getting Started</div>
+                <a href="docs.html">Overview</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Language Basics</div>
+                <a href="docs-variables.html">Variables</a>
+                <a href="docs-types.html" class="active">Data Types</a>
+                <a href="docs-operators.html">Operators</a>
+                <a href="docs-output.html">Output</a>
+                <a href="docs-input.html">Input</a>
+                <a href="docs-strings.html">Strings</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Control Flow</div>
+                <a href="docs-control-flow.html">when / otherwise</a>
+                <a href="docs-loops.html">repeat</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Functions</div>
+                <a href="docs-functions.html">Functions</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Type System</div>
+                <a href="docs-casting.html">Type Casting</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Data Types</h1>
+            <p class="subtitle">Shank's four primitive types.</p>
+
+            <h2><code>int</code></h2>
+            <p>64-bit signed integer. Range: −9,223,372,036,854,775,808 to 9,223,372,036,854,775,807.</p>
+
+<pre><code><span class="kw">im</span> <span class="type">int</span> x <span class="op">=</span> <span class="num">42</span>
+<span class="kw">im</span> <span class="type">int</span> negative <span class="op">=</span> <span class="num">-17</span></code></pre>
+
+            <h2><code>float</code></h2>
+            <p>64-bit double-precision IEEE 754 floating-point number.</p>
+
+<pre><code><span class="kw">im</span> <span class="type">float</span> pi <span class="op">=</span> <span class="num">3.14159</span>
+<span class="kw">im</span> <span class="type">float</span> small <span class="op">=</span> <span class="num">0.001</span></code></pre>
+
+            <h2><code>str</code></h2>
+            <p>Null-terminated string. Enclosed in double quotes. Supports string interpolation with <code>{}</code> delimiters — any expression inside braces is evaluated and its result is inserted into the string.</p>
+
+<pre><code><span class="kw">im</span> <span class="type">str</span> greeting <span class="op">=</span> <span class="str">"Hello, World!"</span></code></pre>
+
+            <p>Interpolation example:</p>
+
+<pre><code><span class="kw">im</span> <span class="type">int</span> x <span class="op">=</span> <span class="num">42</span>
+<span class="kw">im</span> <span class="type">str</span> msg <span class="op">=</span> <span class="str">"Value is {x}"</span></code></pre>
+
+            <h2><code>bool</code></h2>
+            <p>Boolean type. Exactly two possible values: <code>true</code> and <code>false</code>.</p>
+
+<pre><code><span class="kw">im</span> <span class="type">bool</span> flag <span class="op">=</span> <span class="kw">true</span>
+<span class="kw">im</span> <span class="type">bool</span> done <span class="op">=</span> <span class="kw">false</span></code></pre>
+
+            <h2>Type Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Size</th>
+                        <th>Default (on invalid input)</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>int</code></td>
+                        <td>64 bits</td>
+                        <td><code>0</code></td>
+                        <td><code>42</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>float</code></td>
+                        <td>64 bits</td>
+                        <td><code>0.0</code></td>
+                        <td><code>3.14</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>str</code></td>
+                        <td>variable</td>
+                        <td><code>""</code></td>
+                        <td><code>"hello"</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>bool</code></td>
+                        <td>8 bits</td>
+                        <td><code>false</code></td>
+                        <td><code>true</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="page-nav">
+                <a href="docs-variables.html">← Variables</a>
+                <a href="docs-operators.html">Operators →</a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>

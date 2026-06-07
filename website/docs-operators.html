@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operators — Shank</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>🔥</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs.html">Docs</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Getting Started</div>
+                <a href="docs.html">Overview</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Language Basics</div>
+                <a href="docs-variables.html">Variables</a>
+                <a href="docs-types.html">Data Types</a>
+                <a href="docs-operators.html" class="active">Operators</a>
+                <a href="docs-output.html">Output</a>
+                <a href="docs-input.html">Input</a>
+                <a href="docs-strings.html">Strings</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Control Flow</div>
+                <a href="docs-control-flow.html">when / otherwise</a>
+                <a href="docs-loops.html">repeat</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Functions</div>
+                <a href="docs-functions.html">Functions</a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Type System</div>
+                <a href="docs-casting.html">Type Casting</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Operators</h1>
+            <p class="subtitle">Arithmetic, comparison, and logical operators.</p>
+
+            <h2>Arithmetic Operators</h2>
+            <p>Shank supports four arithmetic operators on numeric types.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operator</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">+</code></td>
+                        <td>Addition</td>
+                        <td><code class="inline">5 + 3</code></td>
+                        <td><code class="inline">8</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">-</code></td>
+                        <td>Subtraction</td>
+                        <td><code class="inline">10 - 4</code></td>
+                        <td><code class="inline">6</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">*</code></td>
+                        <td>Multiplication</td>
+                        <td><code class="inline">6 * 7</code></td>
+                        <td><code class="inline">42</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">/</code></td>
+                        <td>Integer division</td>
+                        <td><code class="inline">10 / 3</code></td>
+                        <td><code class="inline">3</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Division truncates toward zero for integers. The result of <code class="inline">10 / 3</code> is <code class="inline">3</code>, not <code class="inline">3.333</code>.</p>
+
+            <h2>Comparison Operators</h2>
+            <p>All comparison operators return a <code class="inline">bool</code> value. Both operands must be the same type.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operator</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">==</code></td>
+                        <td>Equal to</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">!=</code></td>
+                        <td>Not equal to</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">&lt;</code></td>
+                        <td>Less than</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">&gt;</code></td>
+                        <td>Greater than</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">&lt;=</code></td>
+                        <td>Less than or equal to</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">&gt;=</code></td>
+                        <td>Greater than or equal to</td>
+                    </tr>
+                </tbody>
+            </table>
+
+<pre><code><span class="kw">im</span> <span class="type">bool</span> result <span class="op">=</span> <span class="num">5</span> <span class="op">&gt;</span> <span class="num">3</span>  <span class="cm">// result is true</span></code></pre>
+
+            <h2>Logical Operators</h2>
+            <p>Logical operators work exclusively on <code class="inline">bool</code> values. Using <code class="inline">int</code> or <code class="inline">str</code> operands is a compile-time error.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operator</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">and</code></td>
+                        <td>Both operands must be <code class="inline">true</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">or</code></td>
+                        <td>At least one operand must be <code class="inline">true</code></td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">not</code></td>
+                        <td>Unary; inverts a <code class="inline">bool</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+<pre><code><span class="kw">when</span> x <span class="op">&gt;</span> <span class="num">0</span> <span class="kw">and</span> x <span class="op">&lt;</span> <span class="num">100</span>:
+    <span class="kw">out</span> <span class="str">"in range"</span></code></pre>
+
+            <h2>Operator Precedence</h2>
+            <p>Operators are listed from highest to lowest precedence. Operators on the same row share the same precedence level.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Precedence</th>
+                        <th>Operators</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Highest</td>
+                        <td><code class="inline">not</code></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><code class="inline">*</code> &nbsp; <code class="inline">/</code></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><code class="inline">+</code> &nbsp; <code class="inline">-</code></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><code class="inline">&lt;</code> &nbsp; <code class="inline">&gt;</code> &nbsp; <code class="inline">&lt;=</code> &nbsp; <code class="inline">&gt;=</code></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><code class="inline">==</code> &nbsp; <code class="inline">!=</code></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><code class="inline">and</code></td>
+                    </tr>
+                    <tr>
+                        <td>Lowest</td>
+                        <td><code class="inline">or</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Use parentheses to override the default precedence.</p>
+
+<pre><code><span class="cm">// Without parentheses: and binds tighter than or</span>
+<span class="kw">im</span> <span class="type">bool</span> a <span class="op">=</span> <span class="kw">true</span> <span class="kw">or</span> <span class="kw">false</span> <span class="kw">and</span> <span class="kw">false</span>   <span class="cm">// true</span>
+
+<span class="cm">// With parentheses: or evaluates first</span>
+<span class="kw">im</span> <span class="type">bool</span> b <span class="op">=</span> (<span class="kw">true</span> <span class="kw">or</span> <span class="kw">false</span>) <span class="kw">and</span> <span class="kw">false</span>  <span class="cm">// false</span></code></pre>
+
+            <div class="page-nav">
+                <a href="docs-types.html">← Data Types</a>
+                <a href="docs-output.html">Output →</a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>

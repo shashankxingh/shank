@@ -3,193 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shank 0.1 — Documentation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0f1117;
-            --bg-secondary: #161920;
-            --bg-code: #1a1d27;
-            --border: #2a2d3a;
-            --text: #c9d1d9;
-            --text-secondary: #8b949e;
-            --text-heading: #e6edf3;
-            --accent: #58a6ff;
-            --accent-dim: rgba(88,166,255,0.15);
-            --green: #7ee787;
-            --orange: #d29922;
-            --purple: #bc8cff;
-            --red: #ff7b72;
-            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --mono: 'Fira Code', Consolas, monospace;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: var(--font);
-            font-size: 16px;
-            line-height: 1.7;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ---- TOP BAR ---- */
-        .topbar {
-            position: sticky; top: 0; z-index: 100;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 1.5rem; height: 52px;
-            background: rgba(15,17,23,0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-        }
-        .topbar-logo {
-            font-weight: 700; font-size: 1.1rem;
-            color: var(--text-heading); text-decoration: none;
-            display: flex; align-items: center; gap: 0.4rem;
-        }
-        .topbar-logo span { font-size: 1.2rem; }
-        .topbar-links { display: flex; gap: 1.5rem; }
-        .topbar-links a {
-            color: var(--text-secondary); text-decoration: none;
-            font-size: 0.9rem; font-weight: 500;
-            transition: color 0.2s;
-        }
-        .topbar-links a:hover { color: var(--text-heading); }
-
-        /* ---- LAYOUT ---- */
-        .wrapper {
-            display: grid;
-            grid-template-columns: 240px minmax(0, 1fr);
-            max-width: 1160px;
-            margin: 0 auto;
-        }
-
-        /* ---- SIDEBAR ---- */
-        .sidebar {
-            position: sticky; top: 52px; align-self: start;
-            height: calc(100vh - 52px);
-            overflow-y: auto; padding: 1.5rem 1rem;
-            border-right: 1px solid var(--border);
-            font-size: 0.88rem;
-        }
-        .sidebar-section { margin-bottom: 1.5rem; }
-        .sidebar-title {
-            font-size: 0.72rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.08em;
-            color: var(--text-secondary); margin-bottom: 0.5rem;
-        }
-        .sidebar a {
-            display: block; padding: 0.25rem 0.6rem;
-            border-radius: 4px; text-decoration: none;
-            color: var(--text-secondary); transition: all 0.15s;
-        }
-        .sidebar a:hover { color: var(--text-heading); background: var(--accent-dim); }
-
-        /* ---- CONTENT ---- */
-        .content { padding: 2.5rem 3rem 6rem; min-width: 0; }
-
-        .content h1 {
-            font-size: 2rem; font-weight: 700; color: var(--text-heading);
-            margin-bottom: 0.5rem; letter-spacing: -0.02em;
-        }
-        .content .subtitle {
-            font-size: 1.05rem; color: var(--text-secondary);
-            margin-bottom: 2.5rem; border-bottom: 1px solid var(--border);
-            padding-bottom: 1.5rem;
-        }
-
-        .content h2 {
-            font-size: 1.45rem; font-weight: 700; color: var(--text-heading);
-            margin-top: 3rem; margin-bottom: 1rem;
-            padding-bottom: 0.4rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .content h3 {
-            font-size: 1.1rem; font-weight: 600; color: var(--text-heading);
-            margin-top: 2rem; margin-bottom: 0.6rem;
-        }
-        .content p { margin-bottom: 1rem; }
-        .content ul, .content ol { margin: 0 0 1rem 1.5rem; }
-        .content li { margin-bottom: 0.3rem; }
-
-        code {
-            font-family: var(--mono); font-size: 0.88em;
-            background: var(--bg-code); padding: 0.15em 0.4em;
-            border-radius: 4px; color: #e6edf3;
-        }
-
-        /* ---- CODE BLOCKS ---- */
-        pre {
-            background: var(--bg-code);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.2rem 1.4rem;
-            overflow-x: auto;
-            margin: 1rem 0 1.5rem;
-            font-size: 0.9rem;
-            line-height: 1.65;
-        }
-        pre code {
-            background: none; padding: 0;
-            font-size: inherit; color: #e6edf3;
-        }
-
-        /* syntax colors */
-        .kw   { color: #ff7b72; }    /* keywords: im, mut, out, def, when, repeat, return */
-        .type { color: #79c0ff; }    /* types: int, str, float, bool */
-        .fn   { color: #d2a8ff; }    /* function names */
-        .str  { color: #a5d6ff; }    /* strings */
-        .num  { color: #79c0ff; }    /* numbers */
-        .op   { color: #c9d1d9; }    /* operators */
-        .cm   { color: #8b949e; font-style: italic; }  /* comments */
-
-        /* ---- NOTE / WARNING BOXES ---- */
-        .note {
-            background: rgba(88,166,255,0.08);
-            border-left: 3px solid var(--accent);
-            padding: 0.8rem 1rem; margin: 1rem 0 1.5rem;
-            border-radius: 0 6px 6px 0;
-            font-size: 0.92rem;
-        }
-        .note strong { color: var(--accent); }
-        .warn {
-            background: rgba(210,153,34,0.08);
-            border-left: 3px solid var(--orange);
-            padding: 0.8rem 1rem; margin: 1rem 0 1.5rem;
-            border-radius: 0 6px 6px 0;
-            font-size: 0.92rem;
-        }
-        .warn strong { color: var(--orange); }
-
-        /* ---- TABLE ---- */
-        table {
-            width: 100%; border-collapse: collapse;
-            margin: 1rem 0 1.5rem; font-size: 0.92rem;
-        }
-        th, td {
-            padding: 0.6rem 1rem; text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-        th { color: var(--text-heading); font-weight: 600; font-size: 0.85rem; }
-
-        /* ---- FOOTER ---- */
-        .footer {
-            text-align: center; padding: 2rem;
-            color: var(--text-secondary); font-size: 0.85rem;
-            border-top: 1px solid var(--border);
-        }
-
-        /* ---- RESPONSIVE ---- */
-        @media (max-width: 768px) {
-            .wrapper { grid-template-columns: 1fr; }
-            .sidebar { display: none; }
-            .content { padding: 1.5rem; }
-        }
-    </style>
+    <title>Documentation — Shank</title>
+    <link rel="stylesheet" href="docs.css">
 </head>
 <body>
 
@@ -203,52 +18,41 @@
 
 <div class="wrapper">
 
-<!-- SIDEBAR -->
 <nav class="sidebar">
     <div class="sidebar-section">
         <div class="sidebar-title">Getting Started</div>
-        <a href="#overview">Overview</a>
-        <a href="#hello-world">Hello World</a>
+        <a href="docs.html" class="active">Overview</a>
     </div>
     <div class="sidebar-section">
         <div class="sidebar-title">Language Basics</div>
-        <a href="#variables">Variables</a>
-        <a href="#data-types">Data Types</a>
-        <a href="#operators">Operators</a>
-        <a href="#output">Output</a>
-        <a href="#input">Input</a>
-        <a href="#string-interpolation">String Interpolation</a>
+        <a href="docs-variables.html">Variables</a>
+        <a href="docs-types.html">Data Types</a>
+        <a href="docs-operators.html">Operators</a>
+        <a href="docs-output.html">Output</a>
+        <a href="docs-input.html">Input</a>
+        <a href="docs-strings.html">Strings</a>
     </div>
     <div class="sidebar-section">
         <div class="sidebar-title">Control Flow</div>
-        <a href="#when-otherwise">when / otherwise</a>
-        <a href="#repeat">repeat</a>
+        <a href="docs-control-flow.html">when / otherwise</a>
+        <a href="docs-loops.html">repeat</a>
     </div>
     <div class="sidebar-section">
         <div class="sidebar-title">Functions</div>
-        <a href="#defining-functions">Defining Functions</a>
-        <a href="#return-values">Return Values</a>
-        <a href="#forward-calls">Forward Calls</a>
+        <a href="docs-functions.html">Functions</a>
     </div>
     <div class="sidebar-section">
         <div class="sidebar-title">Type System</div>
-        <a href="#type-casting">Type Casting</a>
-        <a href="#type-checking">Type Checking</a>
+        <a href="docs-casting.html">Type Casting</a>
     </div>
 </nav>
 
-<!-- CONTENT -->
 <main class="content">
 
 <h1>Shank Documentation</h1>
-<p class="subtitle">Language reference for Shank v0.1 &mdash; a statically typed, compiled language with Python-like syntax.</p>
+<p class="subtitle">Language reference for Shank v0.1 — a statically typed, compiled language with Python-like syntax.</p>
 
-<!-- ============================================================ -->
-<h2 id="overview">Overview</h2>
-
-<p>Shank compiles <code>.sk</code> source files directly to x86-64 machine code via NASM and GCC. The output is a standalone Windows executable — no runtime or interpreter needed.</p>
-
-<p>The compiler toolchain is invoked through the <code>shank</code> CLI:</p>
+<p>Shank compiles <code>.sk</code> source files directly to x86-64 machine code via NASM and GCC. The output is a standalone Windows executable.</p>
 
 <pre><code><span class="cm"># compile and run</span>
 shank run myfile.sk
@@ -259,281 +63,53 @@ shank build myfile.sk -o myfile.exe
 <span class="cm"># type-check without compiling</span>
 shank check myfile.sk</code></pre>
 
-<!-- ============================================================ -->
-<h2 id="hello-world">Hello World</h2>
-
-<p>Shank programs execute top-level statements from top to bottom. There is no required <code>main</code> function, no imports, no boilerplate.</p>
+<p>Programs execute top-level statements from top to bottom. No <code>main</code> function is required.</p>
 
 <pre><code><span class="kw">out</span> <span class="str">"Hello, World!"</span></code></pre>
 
-<p>Save this as <code>hello.sk</code> and run it:</p>
-
-<pre><code>$ shank run hello.sk
-Hello, World!</code></pre>
-
-<!-- ============================================================ -->
-<h2 id="variables">Variables</h2>
-
-<p>Variables are declared with a mutability keyword followed by a type and a name.</p>
-
-<h3>Immutable variables — <code>im</code></h3>
-
-<p>Immutable variables cannot be reassigned after their initial value is set.</p>
-
-<pre><code><span class="kw">im</span> <span class="type">int</span> age <span class="op">=</span> <span class="num">25</span>
-<span class="kw">im</span> <span class="type">str</span> name <span class="op">=</span> <span class="str">"Shashank"</span>
-<span class="kw">im</span> <span class="type">float</span> pi <span class="op">=</span> <span class="num">3.14159</span>
-<span class="kw">im</span> <span class="type">bool</span> active <span class="op">=</span> <span class="kw">true</span></code></pre>
-
-<h3>Mutable variables — <code>mut</code></h3>
-
-<p>Mutable variables can be reassigned freely.</p>
-
-<pre><code><span class="kw">mut</span> <span class="type">int</span> counter <span class="op">=</span> <span class="num">0</span>
-counter <span class="op">=</span> counter <span class="op">+</span> <span class="num">1</span>
-counter <span class="op">=</span> <span class="num">99</span></code></pre>
-
-<div class="note">
-    <strong>Note:</strong> Attempting to reassign an <code>im</code> variable will produce a compile-time error.
-</div>
-
-<!-- ============================================================ -->
-<h2 id="data-types">Data Types</h2>
-
-<p>Shank has four primitive types. All are statically resolved at compile time.</p>
-
-<table>
-    <thead><tr><th>Type</th><th>Description</th><th>Example</th></tr></thead>
-    <tbody>
-        <tr><td><code>int</code></td><td>64-bit signed integer</td><td><code>42</code>, <code>-17</code></td></tr>
-        <tr><td><code>float</code></td><td>64-bit double-precision float</td><td><code>3.14</code>, <code>0.001</code></td></tr>
-        <tr><td><code>str</code></td><td>String (null-terminated)</td><td><code>"hello"</code></td></tr>
-        <tr><td><code>bool</code></td><td>Boolean</td><td><code>true</code>, <code>false</code></td></tr>
-    </tbody>
-</table>
-
-<!-- ============================================================ -->
-<h2 id="operators">Operators</h2>
-
-<h3>Arithmetic</h3>
-<table>
-    <thead><tr><th>Operator</th><th>Description</th><th>Example</th></tr></thead>
-    <tbody>
-        <tr><td><code>+</code></td><td>Addition</td><td><code>5 + 3</code> → <code>8</code></td></tr>
-        <tr><td><code>-</code></td><td>Subtraction</td><td><code>10 - 4</code> → <code>6</code></td></tr>
-        <tr><td><code>*</code></td><td>Multiplication</td><td><code>6 * 7</code> → <code>42</code></td></tr>
-        <tr><td><code>/</code></td><td>Integer division</td><td><code>10 / 3</code> → <code>3</code></td></tr>
-    </tbody>
-</table>
-
-<h3>Comparison</h3>
-<table>
-    <thead><tr><th>Operator</th><th>Description</th></tr></thead>
-    <tbody>
-        <tr><td><code>==</code></td><td>Equal</td></tr>
-        <tr><td><code>!=</code></td><td>Not equal</td></tr>
-        <tr><td><code>&lt;</code></td><td>Less than</td></tr>
-        <tr><td><code>&gt;</code></td><td>Greater than</td></tr>
-        <tr><td><code>&lt;=</code></td><td>Less than or equal</td></tr>
-        <tr><td><code>&gt;=</code></td><td>Greater than or equal</td></tr>
-    </tbody>
-</table>
-
-<h3>Logical</h3>
-<table>
-    <thead><tr><th>Operator</th><th>Description</th></tr></thead>
-    <tbody>
-        <tr><td><code>and</code></td><td>Logical AND (both operands must be <code>bool</code>)</td></tr>
-        <tr><td><code>or</code></td><td>Logical OR</td></tr>
-        <tr><td><code>not</code></td><td>Logical NOT (unary)</td></tr>
-    </tbody>
-</table>
-
-<!-- ============================================================ -->
-<h2 id="output">Output — <code>out</code></h2>
-
-<p><code>out</code> prints a value to standard output followed by a newline. It works with all four types.</p>
-
-<pre><code><span class="kw">out</span> <span class="num">42</span>
-<span class="kw">out</span> <span class="str">"hello"</span>
-<span class="kw">out</span> <span class="num">3.14</span>
-<span class="kw">out</span> <span class="kw">true</span></code></pre>
-
-<p>You can also print the result of any expression:</p>
-
-<pre><code><span class="kw">im</span> <span class="type">int</span> x <span class="op">=</span> <span class="num">10</span>
-<span class="kw">out</span> x <span class="op">*</span> <span class="num">2</span>       <span class="cm"># prints 20</span></code></pre>
-
-<!-- ============================================================ -->
-<h2 id="input">Input — <code>put</code></h2>
-
-<p><code>put</code> prints a prompt string, reads a line from stdin, and returns the value parsed as the type of the variable it is assigned to.</p>
-
-<pre><code><span class="kw">im</span> <span class="type">int</span> age <span class="op">=</span> <span class="fn">put</span>(<span class="str">"Enter your age: "</span>)
-<span class="kw">im</span> <span class="type">str</span> name <span class="op">=</span> <span class="fn">put</span>(<span class="str">"Enter your name: "</span>)
-<span class="kw">im</span> <span class="type">float</span> height <span class="op">=</span> <span class="fn">put</span>(<span class="str">"Height in meters: "</span>)
-<span class="kw">im</span> <span class="type">bool</span> agree <span class="op">=</span> <span class="fn">put</span>(<span class="str">"Agree? (true/false): "</span>)</code></pre>
-
-<p>The compiler determines which runtime input function to call based on the declared type of the receiving variable. If the user provides invalid input (e.g. letters when <code>int</code> is expected), the value defaults to <code>0</code>, <code>0.0</code>, or <code>false</code> depending on type.</p>
-
-<!-- ============================================================ -->
-<h2 id="string-interpolation">String Interpolation</h2>
-
-<p>Use curly braces <code>{}</code> inside a string literal to embed expressions. The compiler converts each embedded expression to a string and concatenates the result at runtime.</p>
-
-<pre><code><span class="kw">im</span> <span class="type">str</span> name <span class="op">=</span> <span class="str">"Shashank"</span>
-<span class="kw">im</span> <span class="type">int</span> age <span class="op">=</span> <span class="num">20</span>
-
-<span class="kw">out</span> <span class="str">"My name is {name} and I am {age} years old."</span></code></pre>
-
-<p>Output:</p>
-<pre><code>My name is Shashank and I am 20 years old.</code></pre>
-
-<p>Interpolation supports <code>int</code>, <code>float</code>, <code>bool</code>, and <code>str</code> expressions.</p>
-
-<!-- ============================================================ -->
-<h2 id="when-otherwise">Conditional — <code>when</code> / <code>otherwise</code></h2>
-
-<p>Shank uses <code>when</code> and <code>otherwise</code> instead of <code>if</code> and <code>else</code>. The body is indented.</p>
-
-<pre><code><span class="kw">im</span> <span class="type">int</span> score <span class="op">=</span> <span class="num">85</span>
-
-<span class="kw">when</span> score <span class="op">&gt;=</span> <span class="num">90</span><span class="op">:</span>
-    <span class="kw">out</span> <span class="str">"A grade"</span>
-<span class="kw">otherwise</span><span class="op">:</span>
-    <span class="kw">out</span> <span class="str">"Below A"</span></code></pre>
-
-<p>The <code>otherwise</code> block is optional.</p>
-
-<pre><code><span class="kw">when</span> x <span class="op">&gt;</span> <span class="num">0</span><span class="op">:</span>
-    <span class="kw">out</span> <span class="str">"positive"</span></code></pre>
-
-<p>Nesting works as expected:</p>
-
-<pre><code><span class="kw">when</span> x <span class="op">&gt;</span> <span class="num">100</span><span class="op">:</span>
-    <span class="kw">out</span> <span class="str">"big"</span>
-<span class="kw">otherwise</span><span class="op">:</span>
-    <span class="kw">when</span> x <span class="op">&gt;</span> <span class="num">50</span><span class="op">:</span>
-        <span class="kw">out</span> <span class="str">"medium"</span>
-    <span class="kw">otherwise</span><span class="op">:</span>
-        <span class="kw">out</span> <span class="str">"small"</span></code></pre>
-
-<!-- ============================================================ -->
-<h2 id="repeat">Loops — <code>repeat</code></h2>
-
-<p><code>repeat</code> iterates a fixed number of times. The loop counter is bound to the variable after <code>as</code>, starting from <code>0</code>.</p>
-
-<pre><code><span class="kw">repeat</span> <span class="num">5</span> <span class="kw">as</span> i<span class="op">:</span>
-    <span class="kw">out</span> i</code></pre>
-
-<p>Output:</p>
-<pre><code>0
-1
-2
-3
-4</code></pre>
-
-<p>The count can be any integer expression:</p>
-
-<pre><code><span class="kw">im</span> <span class="type">int</span> n <span class="op">=</span> <span class="num">3</span>
-<span class="kw">repeat</span> n <span class="op">*</span> <span class="num">2</span> <span class="kw">as</span> idx<span class="op">:</span>
-    <span class="kw">out</span> <span class="str">"iteration {idx}"</span></code></pre>
-
-<!-- ============================================================ -->
-<h2 id="defining-functions">Defining Functions</h2>
-
-<p>Functions are defined with the <code>fn</code> or <code>def</code> keyword. Both work identically.</p>
-
-<pre><code><span class="kw">def</span> <span class="fn">greet</span>(name<span class="op">:</span> <span class="type">str</span>)<span class="op">:</span>
-    <span class="kw">out</span> <span class="str">"Hello, {name}!"</span>
-
-<span class="fn">greet</span>(<span class="str">"world"</span>)</code></pre>
-
-<h3>Parameter types</h3>
-
-<p>You can declare parameter types in two styles:</p>
-
-<pre><code><span class="cm"># Python style — name: type</span>
-<span class="kw">def</span> <span class="fn">add</span>(a<span class="op">:</span> <span class="type">int</span>, b<span class="op">:</span> <span class="type">int</span>)<span class="op">:</span>
-    <span class="kw">return</span> a <span class="op">+</span> b
-
-<span class="cm"># C style — type name</span>
-<span class="kw">fn</span> <span class="fn">add</span>(<span class="type">int</span> a, <span class="type">int</span> b)<span class="op">:</span>
-    <span class="kw">return</span> a <span class="op">+</span> b</code></pre>
-
-<p>If you omit the type entirely, it defaults to <code>int</code>:</p>
-
-<pre><code><span class="kw">def</span> <span class="fn">double</span>(x)<span class="op">:</span>
-    <span class="kw">return</span> x <span class="op">*</span> <span class="num">2</span></code></pre>
-
-<p>Functions currently support up to 4 parameters.</p>
-
-<!-- ============================================================ -->
-<h2 id="return-values">Return Values</h2>
-
-<p>You do not need to declare the return type. The compiler infers it by analyzing the <code>return</code> statement.</p>
-
-<pre><code><span class="kw">def</span> <span class="fn">square</span>(n)<span class="op">:</span>
-    <span class="kw">return</span> n <span class="op">*</span> n       <span class="cm"># inferred as int</span>
-
-<span class="kw">out</span> <span class="fn">square</span>(<span class="num">7</span>)         <span class="cm"># prints 49</span></code></pre>
-
-<p>If you want to be explicit, you can still annotate it with the arrow syntax:</p>
-
-<pre><code><span class="kw">def</span> <span class="fn">square</span>(n) <span class="op">-></span> <span class="type">int</span><span class="op">:</span>
-    <span class="kw">return</span> n <span class="op">*</span> n</code></pre>
-
-<p>Functions without a <code>return</code> statement return <code>none</code>.</p>
-
-<!-- ============================================================ -->
-<h2 id="forward-calls">Forward Calls</h2>
-
-<p>Functions can be called before they are defined. The compiler resolves all function signatures in a first pass before executing any code.</p>
-
-<pre><code><span class="kw">out</span> <span class="fn">square</span>(<span class="num">5</span>)    <span class="cm"># works — prints 25</span>
-
-<span class="kw">def</span> <span class="fn">square</span>(n)<span class="op">:</span>
-    <span class="kw">return</span> n <span class="op">*</span> n</code></pre>
-
-<!-- ============================================================ -->
-<h2 id="type-casting">Type Casting — <code>-></code></h2>
-
-<p>The arrow operator <code>-></code> converts a value from one type to another.</p>
-
-<pre><code><span class="kw">im</span> <span class="type">float</span> pi <span class="op">=</span> <span class="num">3.14159</span>
-<span class="kw">im</span> <span class="type">int</span> rounded <span class="op">=</span> pi <span class="op">-></span> <span class="type">int</span>
-<span class="kw">out</span> rounded     <span class="cm"># prints 3</span></code></pre>
-
-<p>Supported conversions:</p>
-
-<table>
-    <thead><tr><th>From</th><th>To</th><th>Behavior</th></tr></thead>
-    <tbody>
-        <tr><td><code>float</code></td><td><code>int</code></td><td>Truncation (rounds toward zero)</td></tr>
-        <tr><td><code>int</code></td><td><code>float</code></td><td>Exact conversion</td></tr>
-        <tr><td><code>int</code></td><td><code>str</code></td><td>Decimal string representation</td></tr>
-        <tr><td><code>float</code></td><td><code>str</code></td><td>Decimal string representation</td></tr>
-        <tr><td><code>bool</code></td><td><code>str</code></td><td><code>"true"</code> or <code>"false"</code></td></tr>
-    </tbody>
-</table>
-
-<!-- ============================================================ -->
-<h2 id="type-checking">Type Checking</h2>
-
-<p>Shank enforces types at compile time. You will get clear errors before any executable is produced.</p>
-
-<pre><code><span class="kw">im</span> <span class="type">int</span> x <span class="op">=</span> <span class="str">"hello"</span>
-<span class="cm"># error: Type mismatch: expected 'int', got 'str'.</span></code></pre>
-
-<pre><code><span class="kw">im</span> <span class="type">int</span> a <span class="op">=</span> <span class="num">5</span>
-<span class="kw">im</span> <span class="type">str</span> b <span class="op">=</span> <span class="str">"hi"</span>
-<span class="kw">out</span> a <span class="op">+</span> b
-<span class="cm"># error: Invalid operands to binary operator: 'int' and 'str'.</span></code></pre>
-
-<p>The type checker runs automatically during <code>shank build</code> and <code>shank run</code>. You can also run it standalone with <code>shank check</code>.</p>
-
-<div class="note">
-    <strong>Note:</strong> Comparison operators require both operands to be the same type. Logical operators (<code>and</code>, <code>or</code>, <code>not</code>) only accept <code>bool</code> operands.
+<h2>Topics</h2>
+
+<div class="docs-grid">
+    <a href="docs-variables.html" class="docs-card">
+        <h3>Variables</h3>
+        <p>Immutable and mutable variable declarations with <code>im</code> and <code>mut</code>.</p>
+    </a>
+    <a href="docs-types.html" class="docs-card">
+        <h3>Data Types</h3>
+        <p>The four primitive types: <code>int</code>, <code>float</code>, <code>str</code>, <code>bool</code>.</p>
+    </a>
+    <a href="docs-operators.html" class="docs-card">
+        <h3>Operators</h3>
+        <p>Arithmetic, comparison, and logical operators.</p>
+    </a>
+    <a href="docs-output.html" class="docs-card">
+        <h3>Output</h3>
+        <p>Printing values with the <code>out</code> keyword.</p>
+    </a>
+    <a href="docs-input.html" class="docs-card">
+        <h3>Input</h3>
+        <p>Reading typed user input with <code>put()</code>.</p>
+    </a>
+    <a href="docs-strings.html" class="docs-card">
+        <h3>String Interpolation</h3>
+        <p>Embedding expressions inside strings with <code>{}</code>.</p>
+    </a>
+    <a href="docs-control-flow.html" class="docs-card">
+        <h3>Conditionals</h3>
+        <p>Branching with <code>when</code> and <code>otherwise</code>.</p>
+    </a>
+    <a href="docs-loops.html" class="docs-card">
+        <h3>Loops</h3>
+        <p>Bounded iteration with <code>repeat ... as</code>.</p>
+    </a>
+    <a href="docs-functions.html" class="docs-card">
+        <h3>Functions</h3>
+        <p>Defining functions with <code>def</code>, return inference, forward calls.</p>
+    </a>
+    <a href="docs-casting.html" class="docs-card">
+        <h3>Type Casting</h3>
+        <p>Explicit type conversion with the <code>-></code> operator.</p>
+    </a>
 </div>
 
 </main>
