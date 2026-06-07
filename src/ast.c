@@ -93,18 +93,34 @@ void ast_print(Node* node, int indent) {
             printf("Return\n");
             if (node->ret_value) ast_print(node->ret_value, indent + 1);
             break;
-        case NODE_IF:
-            printf("If\n");
-            ast_print(node->if_stmt.if_cond, indent + 1);
-            for (int i = 0; i < node->if_stmt.if_body_count; i++) {
-                ast_print(node->if_stmt.if_body[i], indent + 1);
+        case NODE_WHEN:
+            printf("When\n");
+            ast_print(node->when_stmt.condition, indent + 1);
+            for (int i = 0; i < node->when_stmt.body_count; i++) {
+                ast_print(node->when_stmt.body[i], indent + 1);
+            }
+            for (int i = 0; i < node->when_stmt.elsewhen_count; i++) {
+                ast_print(node->when_stmt.elsewhen_clauses[i], indent + 1);
+            }
+            if (node->when_stmt.otherwise_body) {
+                printf("Otherwise\n");
+                for (int i = 0; i < node->when_stmt.otherwise_count; i++) {
+                    ast_print(node->when_stmt.otherwise_body[i], indent + 1);
+                }
             }
             break;
-        case NODE_WHILE:
-            printf("While\n");
-            ast_print(node->while_stmt.while_cond, indent + 1);
-            for (int i = 0; i < node->while_stmt.while_body_count; i++) {
-                ast_print(node->while_stmt.while_body[i], indent + 1);
+        case NODE_ELSEWHEN:
+            printf("ElseWhen\n");
+            ast_print(node->elsewhen_stmt.cond, indent + 1);
+            for (int i = 0; i < node->elsewhen_stmt.body_count; i++) {
+                ast_print(node->elsewhen_stmt.body[i], indent + 1);
+            }
+            break;
+        case NODE_REPEAT:
+            printf("Repeat\n");
+            ast_print(node->repeat_stmt.count_expr, indent + 1);
+            for (int i = 0; i < node->repeat_stmt.body_count; i++) {
+                ast_print(node->repeat_stmt.body[i], indent + 1);
             }
             break;
         case NODE_FN_DEF:

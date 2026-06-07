@@ -62,9 +62,8 @@ static void synchronize(Parser* parser) {
             case TOK_OUTC:
             case TOK_FN:
             case TOK_STRUCT:
-            case TOK_IF:
-            case TOK_WHILE:
-            case TOK_FOR:
+            case TOK_WHEN:
+            case TOK_REPEAT:
             case TOK_RETURN:
                 return;
             default:
@@ -551,106 +550,6 @@ static Node* parse_block(Parser* parser, int* count_out) {
     return (Node*)arena_stmts;
 }
 
-static Node* parse_if_stmt(Parser* parser) {
-    int line = parser->previous.line;
-    int col = parser->previous.col;
-    
-    Node* cond = parse_expression(parser);
-    consume(parser, TOK_COLON, "Expect ':' after condition.");
-    
-    int body_count = 0;
-    Node** body = (Node**)parse_block(parser, &body_count);
-    
-    Node** elifs = NULL;
-    int elif_count = 0;
-    int elif_cap = 2;
-    elifs = (Node**)malloc(sizeof(Node*) * elif_cap);
-    
-    while (match(parser, TOK_ELIF)) {
-        int e_line = parser->previous.line;
-        int e_col = parser->previous.col;
-        Node* e_cond = parse_expression(parser);
-        consume(parser, TOK_COLON, "Expect ':' after elif condition.");
-        int e_body_count = 0;
-        Node** e_body = (Node**)parse_block(parser, &e_body_count);
-        
-        Node* e_node = node_create(parser->arena, NODE_ELIF, e_line, e_col);
-        e_node->elif_stmt.elif_cond = e_cond;
-        e_node->elif_stmt.elif_body = e_body;
-        e_node->elif_stmt.elif_body_count = e_body_count;
-        
-        if (elif_count >= elif_cap) {
-            elif_cap *= 2;
-            elifs = (Node**)realloc(elifs, sizeof(Node*) * elif_cap);
-        }
-        elifs[elif_count++] = e_node;
-    }
-    
-    Node** else_body = NULL;
-    int else_count = 0;
-    if (match(parser, TOK_ELSE)) {
-        consume(parser, TOK_COLON, "Expect ':' after else.");
-        else_body = (Node**)parse_block(parser, &else_count);
-    }
-    
-    Node* node = node_create(parser->arena, NODE_IF, line, col);
-    node->if_stmt.if_cond = cond;
-    node->if_stmt.if_body = body;
-    node->if_stmt.if_body_count = body_count;
-    
-    node->if_stmt.elif_clauses = (Node**)arena_alloc(parser->arena, sizeof(Node*) * elif_count);
-    memcpy(node->if_stmt.elif_clauses, elifs, sizeof(Node*) * elif_count);
-    node->if_stmt.elif_count = elif_count;
-    free(elifs);
-    
-    node->if_stmt.else_body = else_body;
-    node->if_stmt.else_count = else_count;
-    
-    return node;
-}
-
-static Node* parse_while_stmt(Parser* parser) {
-    int line = parser->previous.line;
-    int col = parser->previous.col;
-    
-    Node* cond = parse_expression(parser);
-    consume(parser, TOK_COLON, "Expect ':' after condition.");
-    
-    int count = 0;
-    Node** body = (Node**)parse_block(parser, &count);
-    
-    Node* node = node_create(parser->arena, NODE_WHILE, line, col);
-    node->while_stmt.while_cond = cond;
-    node->while_stmt.while_body = body;
-    node->while_stmt.while_body_count = count;
-    return node;
-}
-
-static Node* parse_for_stmt(Parser* parser) {
-    int line = parser->previous.line;
-    int col = parser->previous.col;
-    
-    consume(parser, TOK_IDENT, "Expect variable name after 'for'.");
-    char* var_name = (char*)arena_alloc(parser->arena, parser->previous.length + 1);
-    memcpy(var_name, parser->previous.start, parser->previous.length);
-    var_name[parser->previous.length] = '\0';
-    
-    consume(parser, TOK_IN, "Expect 'in' after variable name.");
-    
-    Node* iter = parse_expression(parser);
-    consume(parser, TOK_COLON, "Expect ':' after iterable.");
-    
-    int count = 0;
-    Node** body = (Node**)parse_block(parser, &count);
-    
-    Node* node = node_create(parser->arena, NODE_FOR, line, col);
-    node->for_stmt.for_var = var_name;
-    node->for_stmt.for_iter = iter;
-    node->for_stmt.for_body = body;
-    node->for_stmt.for_body_count = count;
-    return node;
-}
-
 static Node* parse_when_stmt(Parser* parser) {
     int line = parser->previous.line;
     int col = parser->previous.col;
@@ -660,6 +559,31 @@ static Node* parse_when_stmt(Parser* parser) {
     
     int body_count = 0;
     Node** body = (Node**)parse_block(parser, &body_count);
+    
+    Node** elsewhens = NULL;
+    int elsewhen_count = 0;
+    int elsewhen_cap = 2;
+    elsewhens = (Node**)malloc(sizeof(Node*) * elsewhen_cap);
+    
+    while (match(parser, TOK_ELSEWHEN)) {
+        int e_line = parser->previous.line;
+        int e_col = parser->previous.col;
+        Node* e_cond = parse_expression(parser);
+        consume(parser, TOK_COLON, "Expect ':' after elsewhen condition.");
+        int e_body_count = 0;
+        Node** e_body = (Node**)parse_block(parser, &e_body_count);
+        
+        Node* e_node = node_create(parser->arena, NODE_ELSEWHEN, e_line, e_col);
+        e_node->elsewhen_stmt.cond = e_cond;
+        e_node->elsewhen_stmt.body = e_body;
+        e_node->elsewhen_stmt.body_count = e_body_count;
+        
+        if (elsewhen_count >= elsewhen_cap) {
+            elsewhen_cap *= 2;
+            elsewhens = (Node**)realloc(elsewhens, sizeof(Node*) * elsewhen_cap);
+        }
+        elsewhens[elsewhen_count++] = e_node;
+    }
     
     Node** otherwise_body = NULL;
     int otherwise_count = 0;
@@ -672,6 +596,12 @@ static Node* parse_when_stmt(Parser* parser) {
     node->when_stmt.condition = cond;
     node->when_stmt.body = body;
     node->when_stmt.body_count = body_count;
+    
+    node->when_stmt.elsewhen_clauses = (Node**)arena_alloc(parser->arena, sizeof(Node*) * elsewhen_count);
+    memcpy(node->when_stmt.elsewhen_clauses, elsewhens, sizeof(Node*) * elsewhen_count);
+    node->when_stmt.elsewhen_count = elsewhen_count;
+    free(elsewhens);
+    
     node->when_stmt.otherwise_body = otherwise_body;
     node->when_stmt.otherwise_count = otherwise_count;
     return node;
@@ -887,9 +817,6 @@ static Node* parse_statement(Parser* parser) {
     if (match(parser, TOK_OUT)) return parse_out_stmt(parser);
     if (match(parser, TOK_OUTT)) return parse_outt_stmt(parser);
     if (match(parser, TOK_OUTC)) return parse_outc_stmt(parser);
-    if (match(parser, TOK_IF)) return parse_if_stmt(parser);
-    if (match(parser, TOK_WHILE)) return parse_while_stmt(parser);
-    if (match(parser, TOK_FOR)) return parse_for_stmt(parser);
     if (match(parser, TOK_WHEN)) return parse_when_stmt(parser);
     if (match(parser, TOK_REPEAT)) return parse_repeat_stmt(parser);
     if (match(parser, TOK_RETURN)) return parse_return_stmt(parser);

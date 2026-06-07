@@ -485,63 +485,26 @@ static void gen_stmt(Codegen* cg, Node* stmt) {
             }
             break;
         }
-        
-        case NODE_IF: {
-            int lbl_else = next_label(cg);
-            int lbl_end = next_label(cg);
-            
-            gen_expr(cg, stmt->if_stmt.if_cond);
-            emit(cg, "cmp rax, 0");
-            emit(cg, "je .L_else_%d", lbl_else);
-            
-            scope_push(cg->symbols);
-            for (int i = 0; i < stmt->if_stmt.if_body_count; i++) {
-                gen_stmt(cg, stmt->if_stmt.if_body[i]);
-            }
-            scope_pop(cg->symbols);
-            emit(cg, "jmp .L_end_%d", lbl_end);
-            
-            emit(cg, ".L_else_%d:", lbl_else);
-            // Elifs omitted for brevity
-            if (stmt->if_stmt.else_body) {
-                scope_push(cg->symbols);
-                for (int i = 0; i < stmt->if_stmt.else_count; i++) {
-                    gen_stmt(cg, stmt->if_stmt.else_body[i]);
-                }
-                scope_pop(cg->symbols);
-            }
-            
-            emit(cg, ".L_end_%d:", lbl_end);
-            break;
-        }
-        
-        case NODE_WHILE: {
-            int lbl_start = next_label(cg);
-            int lbl_end = next_label(cg);
-            
-            emit(cg, ".L_while_start_%d:", lbl_start);
-            gen_expr(cg, stmt->while_stmt.while_cond);
-            emit(cg, "cmp rax, 0");
-            emit(cg, "je .L_while_end_%d", lbl_end);
-            
-            scope_push(cg->symbols);
-            for (int i = 0; i < stmt->while_stmt.while_body_count; i++) {
-                gen_stmt(cg, stmt->while_stmt.while_body[i]);
-            }
-            scope_pop(cg->symbols);
-            
-            emit(cg, "jmp .L_while_start_%d", lbl_start);
-            emit(cg, ".L_while_end_%d:", lbl_end);
-            break;
-        }
-        
+
         case NODE_WHEN: {
-            int lbl_otherwise = next_label(cg);
             int lbl_end = next_label(cg);
             
+            // Generate labels for elsewhens
+            int* elsewhen_labels = (int*)malloc(sizeof(int) * stmt->when_stmt.elsewhen_count);
+            for (int i = 0; i < stmt->when_stmt.elsewhen_count; i++) {
+                elsewhen_labels[i] = next_label(cg);
+            }
+            
+            int lbl_otherwise = next_label(cg);
+            
+            // First condition
             gen_expr(cg, stmt->when_stmt.condition);
             emit(cg, "cmp rax, 0");
-            emit(cg, "je .L_otherwise_%d", lbl_otherwise);
+            if (stmt->when_stmt.elsewhen_count > 0) {
+                emit(cg, "je .L_elsewhen_%d", elsewhen_labels[0]);
+            } else {
+                emit(cg, "je .L_otherwise_%d", lbl_otherwise);
+            }
             
             scope_push(cg->symbols);
             for (int i = 0; i < stmt->when_stmt.body_count; i++) {
@@ -549,6 +512,29 @@ static void gen_stmt(Codegen* cg, Node* stmt) {
             }
             scope_pop(cg->symbols);
             emit(cg, "jmp .L_end_%d", lbl_end);
+            
+            for (int i = 0; i < stmt->when_stmt.elsewhen_count; i++) {
+                emit(cg, ".L_elsewhen_%d:", elsewhen_labels[i]);
+                Node* e_node = stmt->when_stmt.elsewhen_clauses[i];
+                
+                gen_expr(cg, e_node->elsewhen_stmt.cond);
+                emit(cg, "cmp rax, 0");
+                
+                if (i + 1 < stmt->when_stmt.elsewhen_count) {
+                    emit(cg, "je .L_elsewhen_%d", elsewhen_labels[i+1]);
+                } else {
+                    emit(cg, "je .L_otherwise_%d", lbl_otherwise);
+                }
+                
+                scope_push(cg->symbols);
+                for (int j = 0; j < e_node->elsewhen_stmt.body_count; j++) {
+                    gen_stmt(cg, e_node->elsewhen_stmt.body[j]);
+                }
+                scope_pop(cg->symbols);
+                emit(cg, "jmp .L_end_%d", lbl_end);
+            }
+            
+            free(elsewhen_labels);
             
             emit(cg, ".L_otherwise_%d:", lbl_otherwise);
             if (stmt->when_stmt.otherwise_body) {

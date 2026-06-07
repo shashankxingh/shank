@@ -16,11 +16,11 @@ typedef enum {
     TOK_LPAREN, TOK_RPAREN, TOK_LBRACKET, TOK_RBRACKET,
     TOK_COLON, TOK_COMMA, TOK_DOT, TOK_DOTDOT,
     TOK_IM, TOK_MUT, TOK_FN, TOK_STRUCT, TOK_ENUM,
-    TOK_IF, TOK_ELIF, TOK_ELSE, TOK_FOR, TOK_WHILE, TOK_IN,
+    TOK_IN,
     TOK_MATCH, TOK_CASE,
     TOK_RETURN, TOK_BREAK, TOK_CONTINUE,
     TOK_IMPORT, TOK_TRUE, TOK_FALSE, TOK_NONE, TOK_OUT, TOK_OUTT, TOK_OUTC, TOK_PUT,
-    TOK_WHEN, TOK_OTHERWISE, TOK_REPEAT, TOK_AS,
+    TOK_WHEN, TOK_ELSEWHEN, TOK_OTHERWISE, TOK_REPEAT, TOK_AS,
     TOK_FSTR_START, TOK_FSTR_MID, TOK_FSTR_END, TOK_LBRACE, TOK_RBRACE,
     TOK_INDENT, TOK_DEDENT, TOK_NEWLINE, TOK_EOF, TOK_ERROR
 } TokenKind;
@@ -31,12 +31,11 @@ typedef enum {
     NODE_IDENT, NODE_BINARY, NODE_UNARY, NODE_CALL,
     NODE_FIELD_ACCESS, NODE_INDEX, NODE_ARRAY_LIT,
     NODE_IM, NODE_ASSIGN, NODE_RETURN, NODE_OUT, NODE_OUTT, NODE_OUTC, NODE_PUT,
-    NODE_IF, NODE_ELIF, NODE_WHILE, NODE_FOR,
     NODE_MATCH, NODE_CASE,
     NODE_EXPR_STMT, NODE_BREAK, NODE_CONTINUE,
     NODE_FN_DEF, NODE_STRUCT_DEF, NODE_ENUM_DEF,
     NODE_IMPORT, NODE_PROGRAM, NODE_INTERP_STR,
-    NODE_WHEN, NODE_OTHERWISE, NODE_REPEAT, NODE_CAST
+    NODE_WHEN, NODE_ELSEWHEN, NODE_OTHERWISE, NODE_REPEAT, NODE_CAST
 } NodeKind;
 
 typedef struct Node Node;
@@ -80,16 +79,7 @@ struct Node {
         struct { Node* assign_target; Node* assign_value; } assign;
         Node* ret_value;
         
-        struct { 
-            Node* if_cond; 
-            Node** if_body; int if_body_count; 
-            Node** elif_clauses; int elif_count; 
-            Node** else_body; int else_count; 
-        } if_stmt;
-        
-        struct { Node* elif_cond; Node** elif_body; int elif_body_count; } elif_stmt;
-        struct { Node* while_cond; Node** while_body; int while_body_count; } while_stmt;
-        struct { char* for_var; Node* for_iter; Node** for_body; int for_body_count; } for_stmt;
+        struct { Node* cond; Node** body; int body_count; } elsewhen_stmt;
         
         Node* expr;
         
@@ -117,6 +107,8 @@ struct Node {
             Node* condition;
             Node** body;
             int body_count;
+            Node** elsewhen_clauses;
+            int elsewhen_count;
             Node** otherwise_body;
             int otherwise_count;
         } when_stmt;

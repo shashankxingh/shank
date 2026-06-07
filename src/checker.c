@@ -10,27 +10,7 @@ void checker_init(Checker* checker, Arena* arena) {
     checker->had_error = 0;
     
     // Add builtin functions to top level scope
-    Type* print_int_t = type_create(arena, TYPE_FUNCTION);
-    print_int_t->func.param_count = 1;
-    print_int_t->func.param_types = (Type**)arena_alloc(arena, sizeof(Type*));
-    print_int_t->func.param_types[0] = type_int;
-    print_int_t->func.return_type = type_none;
-    symbol_define(checker->symbols, "print_int", print_int_t, 0);
-    
-    Type* print_float_t = type_create(arena, TYPE_FUNCTION);
-    print_float_t->func.param_count = 1;
-    print_float_t->func.param_types = (Type**)arena_alloc(arena, sizeof(Type*));
-    print_float_t->func.param_types[0] = type_float;
-    print_float_t->func.return_type = type_none;
-    symbol_define(checker->symbols, "print_float", print_float_t, 0);
-
-    // Simplification for v0.1: just 'print' that we'll lower in codegen depending on type
-    Type* print_t = type_create(arena, TYPE_FUNCTION);
-    print_t->func.param_count = 1;
-    print_t->func.param_types = (Type**)arena_alloc(arena, sizeof(Type*));
-    print_t->func.param_types[0] = type_unknown; // polymorphic
-    print_t->func.return_type = type_none;
-    symbol_define(checker->symbols, "print", print_t, 0);
+    // (Legacy print functions removed)
     
     Type* range_t = type_create(arena, TYPE_FUNCTION);
     range_t->func.param_count = 1;
@@ -415,82 +395,7 @@ static void check_stmt(Checker* checker, Node* stmt) {
             break;
         }
         
-        case NODE_IF: {
-            Type* cond_t = check_expr(checker, stmt->if_stmt.if_cond);
-            if (cond_t != type_unknown && cond_t != type_bool) {
-                sk_error(NULL, stmt->if_stmt.if_cond->line, stmt->if_stmt.if_cond->col, "If condition must be bool.");
-                checker->had_error = 1;
-            }
-            
-            scope_push(checker->symbols);
-            for (int i = 0; i < stmt->if_stmt.if_body_count; i++) {
-                check_stmt(checker, stmt->if_stmt.if_body[i]);
-            }
-            scope_pop(checker->symbols);
-            
-            for (int i = 0; i < stmt->if_stmt.elif_count; i++) {
-                Node* elif = stmt->if_stmt.elif_clauses[i];
-                Type* elif_cond = check_expr(checker, elif->elif_stmt.elif_cond);
-                if (elif_cond != type_unknown && elif_cond != type_bool) {
-                    sk_error(NULL, elif->elif_stmt.elif_cond->line, elif->elif_stmt.elif_cond->col, "Elif condition must be bool.");
-                    checker->had_error = 1;
-                }
-                
-                scope_push(checker->symbols);
-                for (int j = 0; j < elif->elif_stmt.elif_body_count; j++) {
-                    check_stmt(checker, elif->elif_stmt.elif_body[j]);
-                }
-                scope_pop(checker->symbols);
-            }
-            
-            if (stmt->if_stmt.else_body) {
-                scope_push(checker->symbols);
-                for (int i = 0; i < stmt->if_stmt.else_count; i++) {
-                    check_stmt(checker, stmt->if_stmt.else_body[i]);
-                }
-                scope_pop(checker->symbols);
-            }
-            break;
-        }
-        
-        case NODE_WHILE: {
-            Type* cond_t = check_expr(checker, stmt->while_stmt.while_cond);
-            if (cond_t != type_unknown && cond_t != type_bool) {
-                sk_error(NULL, stmt->while_stmt.while_cond->line, stmt->while_stmt.while_cond->col, "While condition must be bool.");
-                checker->had_error = 1;
-            }
-            
-            scope_push(checker->symbols);
-            for (int i = 0; i < stmt->while_stmt.while_body_count; i++) {
-                check_stmt(checker, stmt->while_stmt.while_body[i]);
-            }
-            scope_pop(checker->symbols);
-            break;
-        }
-        
-        case NODE_FOR: {
-            Type* iter_t = check_expr(checker, stmt->for_stmt.for_iter);
-            Type* elem_t = type_unknown;
-            
-            if (iter_t != type_unknown) {
-                if (iter_t->kind == TYPE_ARRAY) {
-                    elem_t = iter_t->array.elem_type;
-                } else {
-                    sk_error(NULL, stmt->for_stmt.for_iter->line, stmt->for_stmt.for_iter->col, "Can only iterate over arrays.");
-                    checker->had_error = 1;
-                }
-            }
-            
-            scope_push(checker->symbols);
-            symbol_define(checker->symbols, stmt->for_stmt.for_var, elem_t, 0); // immutable iter var
-            
-            for (int i = 0; i < stmt->for_stmt.for_body_count; i++) {
-                check_stmt(checker, stmt->for_stmt.for_body[i]);
-            }
-            scope_pop(checker->symbols);
-            break;
-        }
-        
+
         case NODE_WHEN: {
             Type* cond_t = check_expr(checker, stmt->when_stmt.condition);
             if (cond_t != type_unknown && cond_t != type_bool) {
@@ -503,6 +408,21 @@ static void check_stmt(Checker* checker, Node* stmt) {
                 check_stmt(checker, stmt->when_stmt.body[i]);
             }
             scope_pop(checker->symbols);
+            
+            for (int i = 0; i < stmt->when_stmt.elsewhen_count; i++) {
+                Node* e_node = stmt->when_stmt.elsewhen_clauses[i];
+                Type* e_cond_t = check_expr(checker, e_node->elsewhen_stmt.cond);
+                if (e_cond_t != type_unknown && e_cond_t != type_bool) {
+                    sk_error(NULL, e_node->elsewhen_stmt.cond->line, e_node->elsewhen_stmt.cond->col, "Elsewhen condition must be bool.");
+                    checker->had_error = 1;
+                }
+                
+                scope_push(checker->symbols);
+                for (int j = 0; j < e_node->elsewhen_stmt.body_count; j++) {
+                    check_stmt(checker, e_node->elsewhen_stmt.body[j]);
+                }
+                scope_pop(checker->symbols);
+            }
             
             if (stmt->when_stmt.otherwise_body) {
                 scope_push(checker->symbols);
