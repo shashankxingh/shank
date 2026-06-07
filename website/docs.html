@@ -393,7 +393,7 @@ counter <span class="op">=</span> <span class="num">99</span>
 
 <p>Functions are defined with <code>def</code> or <code>fn</code>. Both are identical.</p>
 
-<pre><code><span class="kw">def</span> <span class="fn">greet</span>(name<span class="op">:</span> <span class="type">str</span>)<span class="op">:</span>
+<pre><code><span class="kw">fn</span> <span class="fn">greet</span>(name<span class="op">:</span> <span class="type">str</span>)<span class="op">:</span>
     <span class="kw">out</span> <span class="str">"Hello, {name}!"</span>
 
 <span class="fn">greet</span>(<span class="str">"world"</span>)</code></pre>
@@ -403,7 +403,7 @@ counter <span class="op">=</span> <span class="num">99</span>
 <p>Two styles are supported:</p>
 
 <pre><code><span class="cm"># Python style — name: type</span>
-<span class="kw">def</span> <span class="fn">add</span>(a<span class="op">:</span> <span class="type">int</span>, b<span class="op">:</span> <span class="type">int</span>)<span class="op">:</span>
+<span class="kw">fn</span> <span class="fn">add</span>(a<span class="op">:</span> <span class="type">int</span>, b<span class="op">:</span> <span class="type">int</span>)<span class="op">:</span>
     <span class="kw">return</span> a <span class="op">+</span> b
 
 <span class="cm"># C style — type name</span>
@@ -412,7 +412,7 @@ counter <span class="op">=</span> <span class="num">99</span>
 
 <p>If you omit the type entirely, it defaults to <code>int</code>:</p>
 
-<pre><code><span class="kw">def</span> <span class="fn">double</span>(x)<span class="op">:</span>
+<pre><code><span class="kw">fn</span> <span class="fn">double</span>(x)<span class="op">:</span>
     <span class="kw">return</span> x <span class="op">*</span> <span class="num">2</span></code></pre>
 
 <p>Functions currently support up to 4 parameters (Windows x64 ABI register limit).</p>
@@ -422,14 +422,14 @@ counter <span class="op">=</span> <span class="num">99</span>
 
 <p>The return type does not need to be declared. The compiler infers it by analyzing the <code>return</code> expression.</p>
 
-<pre><code><span class="kw">def</span> <span class="fn">square</span>(n)<span class="op">:</span>
+<pre><code><span class="kw">fn</span> <span class="fn">square</span>(n)<span class="op">:</span>
     <span class="kw">return</span> n <span class="op">*</span> n       <span class="cm"># inferred as int</span>
 
 <span class="kw">out</span> <span class="fn">square</span>(<span class="num">7</span>)         <span class="cm"># prints 49</span></code></pre>
 
 <p>You can still declare it explicitly with the arrow syntax:</p>
 
-<pre><code><span class="kw">def</span> <span class="fn">square</span>(n) <span class="op">-></span> <span class="type">int</span><span class="op">:</span>
+<pre><code><span class="kw">fn</span> <span class="fn">square</span>(n) <span class="op">-></span> <span class="type">int</span><span class="op">:</span>
     <span class="kw">return</span> n <span class="op">*</span> n</code></pre>
 
 <p>Functions without a <code>return</code> statement return <code>none</code>.</p>
@@ -441,7 +441,7 @@ counter <span class="op">=</span> <span class="num">99</span>
 
 <pre><code><span class="kw">out</span> <span class="fn">square</span>(<span class="num">5</span>)    <span class="cm"># works — prints 25</span>
 
-<span class="kw">def</span> <span class="fn">square</span>(n)<span class="op">:</span>
+<span class="kw">fn</span> <span class="fn">square</span>(n)<span class="op">:</span>
     <span class="kw">return</span> n <span class="op">*</span> n</code></pre>
 
 <p>Top-level statements and function definitions can be mixed freely. Functions are hoisted; top-level code runs in order.</p>
@@ -451,7 +451,7 @@ counter <span class="op">=</span> <span class="num">99</span>
 <span class="kw">im</span> <span class="type">int</span> x <span class="op">=</span> <span class="num">10</span>
 <span class="kw">out</span> <span class="fn">add</span>(x, <span class="num">5</span>)      <span class="cm"># prints 15</span>
 
-<span class="kw">def</span> <span class="fn">add</span>(a, b)<span class="op">:</span>
+<span class="kw">fn</span> <span class="fn">add</span>(a, b)<span class="op">:</span>
     <span class="kw">return</span> a <span class="op">+</span> b</code></pre>
 
 <div class="note"><strong>Note:</strong> Recursive functions work. The compiler does not detect infinite recursion.</div>

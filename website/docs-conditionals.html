@@ -23,21 +23,21 @@
                 <a href="docs-types.html">Types & Coercion</a>
                 <a href="docs-operators.html">Operators & Math</a>
                 <a href="docs-conditionals.html" class="active">Control Flow</a>
-                <a href="#">Loops & Iteration (Coming Soon)</a>
-                <a href="#">Functions (Coming Soon)</a>
+                <a href="docs-loops.html">Loops & Iteration</a>
+                <a href="docs-functions.html">Functions</a>
             </div>
         </nav>
 
         <main class="content">
-            <h1>Control Flow (Conditionals)</h1>
-            <p class="subtitle">An exhaustive deep-dive into Shank's dual conditional syntax, boolean rigidity, and AST evaluation mechanics.</p>
+            <h1>Control Flow</h1>
+            <p class="subtitle">An exhaustive deep-dive into Shank's conditional syntax, boolean rigidity, and AST evaluation mechanics.</p>
 
             <p>Unlike dynamic languages that use "truthy" concepts (like treating empty lists or zero as false), Shank enforces strict binary logic. Every branch condition must evaluate mathematically to a `bool`. The compiler directly generates highly optimized Jump instructions (`je`, `jne`, `jmp`) based on these states.</p>
 
             <hr>
 
-            <h2>1. The Primary Syntax: <code class="inline">when</code> / <code class="inline">otherwise</code></h2>
-            <p>Shank's preferred, idiomatic syntax for logical branching utilizes the <code class="inline">when</code> and <code class="inline">otherwise</code> keywords. This syntax cleanly describes state-based execution, discarding ambiguous `else if` chains.</p>
+            <h2>1. The Syntax: <code class="inline">when</code> / <code class="inline">elsewhen</code> / <code class="inline">otherwise</code></h2>
+            <p>Shank's strictly idiomatic syntax for logical branching utilizes the <code class="inline">when</code>, <code class="inline">elsewhen</code>, and <code class="inline">otherwise</code> keywords. This syntax cleanly describes state-based execution.</p>
 
             <h3>Basic Evaluation</h3>
             <pre><code><span class="kw">im</span> <span class="type">bool</span> system_ready <span class="op">=</span> <span class="kw">true</span>
@@ -47,66 +47,60 @@
 <span class="kw">otherwise</span>:
     <span class="kw">out</span> <span class="str">"System is offline. Halting."</span></code></pre>
 
-            <div class="warn">
-                <strong>No 'elif' Equivalent for When:</strong> The `when` statement strictly operates as an A/B switch. It parses via `NODE_WHEN` in `src/parser.c` directly into a single body and a single `otherwise` fallback block. If you require complex multi-step branching chains, use the secondary syntax instead.
-            </div>
-
-            <hr>
-
-            <h2>2. The Secondary Syntax: <code class="inline">if</code> / <code class="inline">elif</code> / <code class="inline">else</code></h2>
-            <p>For scenarios requiring deeply chained conditions, Shank implements the traditional C/Python-style branching logic.</p>
+            <h3>Chaining Conditions</h3>
+            <p>For scenarios requiring deeply chained conditions, you can utilize `elsewhen`.</p>
 
             <pre><code><span class="kw">im</span> <span class="type">int</span> score <span class="op">=</span> <span class="num">85</span>
 
-<span class="kw">if</span> score <span class="op">>=</span> <span class="num">90</span>:
+<span class="kw">when</span> score <span class="op">>=</span> <span class="num">90</span>:
     <span class="kw">out</span> <span class="str">"Grade: A"</span>
-<span class="kw">elif</span> score <span class="op">>=</span> <span class="num">80</span>:
+<span class="kw">elsewhen</span> score <span class="op">>=</span> <span class="num">80</span>:
     <span class="kw">out</span> <span class="str">"Grade: B"</span>
-<span class="kw">elif</span> score <span class="op">>=</span> <span class="num">70</span>:
+<span class="kw">elsewhen</span> score <span class="op">>=</span> <span class="num">70</span>:
     <span class="kw">out</span> <span class="str">"Grade: C"</span>
-<span class="kw">else</span>:
+<span class="kw">otherwise</span>:
     <span class="kw">out</span> <span class="str">"Grade: F"</span></code></pre>
 
-            <h3>How <code class="inline">NODE_IF</code> Operates</h3>
-            <p>During the Code Generation phase (`src/codegen.c`), the compiler linearizes these branches. It emits a test evaluation (`cmp`), followed immediately by a Jump If Equal/Not Equal (`je`/`jne`) targeting dynamically generated Assembly labels (e.g., `.L_elif_1`, `.L_else`). At the end of every successful block, a definitive Jump (`jmp .L_end`) completely escapes the chain.</p>
+            <h3>How <code class="inline">NODE_WHEN</code> Operates</h3>
+            <p>During the Code Generation phase (`src/codegen.c`), the compiler linearizes these branches. It emits a test evaluation (`cmp`), followed immediately by a Jump If Equal/Not Equal (`je`/`jne`) targeting dynamically generated Assembly labels (e.g., `.L_elsewhen_1`, `.L_otherwise`). At the end of every successful block, a definitive Jump (`jmp .L_end`) completely escapes the chain.</p>
 
             <hr>
 
-            <h2>3. Strict Boolean Rigidity</h2>
+            <h2>2. Strict Boolean Rigidity</h2>
             <p>Shank completely eliminates the concept of "truthy" or "falsy" values at the compiler level. </p>
 
             <pre><code><span class="kw">im</span> <span class="type">int</span> users <span class="op">=</span> <span class="num">5</span>
 
 <span class="cm"># FATAL: The condition must evaluate to a bool, not an int.</span>
-<span class="kw">if</span> users:
+<span class="kw">when</span> users:
     <span class="kw">out</span> <span class="str">"There are users online."</span>
 
 <span class="cm"># CORRECT: Evaluate the relational math to yield a bool.</span>
-<span class="kw">if</span> users <span class="op">></span> <span class="num">0</span>:
+<span class="kw">when</span> users <span class="op">></span> <span class="num">0</span>:
     <span class="kw">out</span> <span class="str">"There are users online."</span></code></pre>
 
             <p>This is strictly enforced inside `src/checker.c`. The semantic analyzer explicitly checks the `resolved_type` of the condition expression. If `cond->resolved_type != type_bool`, the compilation instantly halts.</p>
 
             <hr>
 
-            <h2>4. Nested Branching and Scope</h2>
+            <h2>3. Nested Branching and Scope</h2>
             <p>Because Shank is indentation-based (via the `TOK_INDENT` and `TOK_DEDENT` lexer tokens), you can infinitely nest conditionals. Any variables declared within a branch are rigidly scoped to that indented block and destroyed when the block is dedented.</p>
 
             <pre><code><span class="kw">im</span> <span class="type">bool</span> auth <span class="op">=</span> <span class="kw">true</span>
 <span class="kw">im</span> <span class="type">int</span> clearance <span class="op">=</span> <span class="num">5</span>
 
-<span class="kw">if</span> auth:
+<span class="kw">when</span> auth:
     <span class="kw">im</span> <span class="type">str</span> local_token <span class="op">=</span> <span class="str">"X910"</span>
-    <span class="kw">if</span> clearance <span class="op">>=</span> <span class="num">5</span>:
+    <span class="kw">when</span> clearance <span class="op">>=</span> <span class="num">5</span>:
         <span class="kw">out</span> f<span class="str">"Token {local_token} accepted."</span>
-    <span class="kw">else</span>:
+    <span class="kw">otherwise</span>:
         <span class="kw">out</span> <span class="str">"Clearance too low."</span>
 
 <span class="cm"># 'local_token' is no longer in the symbol table here.</span></code></pre>
 
             <div class="page-nav">
                 <a href="docs-operators.html">← Operators & Math</a>
-                <a href="#">Next: Loops & Iteration →</a>
+                <a href="docs-loops.html">Next: Loops & Iteration →</a>
             </div>
         </main>
     </div>
