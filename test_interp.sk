@@ -1,4 +1,0 @@
-im int age = 18
-out "Your age is {age}"
-out "Next year you will be {age + 1}."
-out "1 + 1 = {1 + 1}"

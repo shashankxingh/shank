@@ -1,6 +1,0 @@
-outc 65
-outc 66
-outc 67
-out ""
-out 10 % 3
-out 10 % 2

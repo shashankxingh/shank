@@ -1,6 +1,0 @@
-out "Hello from top level!"
-im int x = 10
-out "x is {x}"
-
-when x > 5:
-    out "It works!"
