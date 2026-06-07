@@ -274,9 +274,12 @@ static Node* parse_binary(Parser* parser, Node* left) {
     TokenKind operator_type = parser->previous.kind;
     ParseRule* rule = get_rule(operator_type);
     
-    // Right-associative for power
+    // Left-associative by default: pass prec + 1
+    // Right-associative for power: pass prec
     Precedence prec = rule->precedence;
-    if (operator_type == TOK_POWER) prec = (Precedence)(prec - 1);
+    if (operator_type != TOK_POWER) {
+        prec = (Precedence)(prec + 1);
+    }
     
     Node* right = parse_precedence(parser, prec);
     
