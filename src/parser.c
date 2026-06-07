@@ -706,15 +706,35 @@ static Node* parse_fn_def(Parser* parser) {
     
     if (!check(parser, TOK_RPAREN)) {
         do {
-            consume(parser, TOK_IDENT, "Expect parameter name.");
+            // Handle people accidentally writing 'im' or 'mut' in parameters
+            if (match(parser, TOK_IM) || match(parser, TOK_MUT)) {
+                // just ignore them for now to be forgiving
+            }
+            
+            // To support C-style `int a` or Python-style `a: int` or just `a`,
+            // we will just look for an identifier.
+            consume(parser, TOK_IDENT, "Expect parameter name or type.");
             char* p_name = (char*)arena_alloc(parser->arena, parser->previous.length + 1);
             memcpy(p_name, parser->previous.start, parser->previous.length);
             p_name[parser->previous.length] = '\0';
             
-            consume(parser, TOK_COLON, "Expect ':' after parameter name.");
-            Node* type_node = parse_type_annotation(parser);
-            char* p_type = type_node ? sk_strdup(type_node->name) : sk_strdup("unknown");
-            // Could free type_node but it's arena allocated
+            char* p_type = NULL;
+            
+            // If they wrote `int a` (C-style)
+            if (check(parser, TOK_IDENT) && !check(parser, TOK_COLON)) {
+                p_type = p_name; // the first ident was the type
+                consume(parser, TOK_IDENT, "Expect parameter name.");
+                p_name = (char*)arena_alloc(parser->arena, parser->previous.length + 1);
+                memcpy(p_name, parser->previous.start, parser->previous.length);
+                p_name[parser->previous.length] = '\0';
+            } else if (match(parser, TOK_COLON)) {
+                // Python style: `a: int`
+                Node* type_node = parse_type_annotation(parser);
+                p_type = type_node ? sk_strdup(type_node->name) : sk_strdup("unknown");
+            } else {
+                // No type specified: default to int
+                p_type = sk_strdup("int");
+            }
             
             if (param_count >= cap) {
                 cap *= 2;
@@ -729,7 +749,7 @@ static Node* parse_fn_def(Parser* parser) {
     
     consume(parser, TOK_RPAREN, "Expect ')' after parameters.");
     
-    char* ret_type = sk_strdup("none");
+    char* ret_type = sk_strdup("unknown"); // Will be inferred or defaulted to none if unknown
     if (match(parser, TOK_ARROW)) {
         Node* rt_node = parse_type_annotation(parser);
         free(ret_type);

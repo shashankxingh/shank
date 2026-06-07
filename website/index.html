@@ -34,15 +34,13 @@
                 <div class="code-title">hello.sk</div>
             </div>
             <div class="code-content">
-<pre><code><span class="token comment"># A simple Shank program</span>
-<span class="token keyword">fn</span> <span class="token function">main</span>():
-    <span class="token keyword">let</span> name = <span class="token string">"World"</span>
-    <span class="token function">print</span>(<span class="token string">"Hello, "</span> + name + <span class="token string">"!"</span>)
-    
-    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token function">range</span>(3):
-        <span class="token function">print</span>(i)
+<pre><code><span class="token comment"># Top-level scripting means no boilerplate!</span>
+<span class="token keyword">im str</span> name <span class="token operator">=</span> <span class="token function">put</span>(<span class="token string">"Who are you? "</span>)
 
-<span class="token function">main</span>()</code></pre>
+<span class="token keyword">when</span> name <span class="token operator">==</span> <span class="token string">"Neo"</span>:
+    <span class="token keyword">out</span> <span class="token string">"Wake up..."</span>
+<span class="token keyword">otherwise</span>:
+    <span class="token keyword">out</span> <span class="token string">"Hello, {name}!"</span></code></pre>
             </div>
         </div>
     </section>

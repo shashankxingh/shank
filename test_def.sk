@@ -1,0 +1,4 @@
+out age(12)
+
+def age(a):
+    return a

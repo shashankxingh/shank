@@ -628,8 +628,30 @@ int checker_check(Checker* checker, Node* program) {
         if (stmt->kind == NODE_STRUCT_DEF) continue; // Already done
         
         if (stmt->kind == NODE_FN_DEF) {
-            // Check body
             Symbol* sym = symbol_lookup(checker->symbols, stmt->fn_def.fn_name);
+            
+            // If return type is unknown, try to infer it from the first return statement
+            if (sym->type->func.return_type == type_unknown || strcmp(stmt->fn_def.fn_return_type, "unknown") == 0) {
+                Type* inferred = type_none;
+                for (int j = 0; j < stmt->fn_def.fn_body_count; j++) {
+                    Node* b_stmt = stmt->fn_def.fn_body[j];
+                    if (b_stmt->kind == NODE_RETURN) {
+                        if (b_stmt->ret_value) {
+                            // Quick inference, requires pushing scope for params
+                            scope_push(checker->symbols);
+                            for (int k = 0; k < sym->type->func.param_count; k++) {
+                                symbol_define(checker->symbols, stmt->fn_def.fn_params[k].name, sym->type->func.param_types[k], 0);
+                            }
+                            inferred = check_expr(checker, b_stmt->ret_value);
+                            scope_pop(checker->symbols);
+                        }
+                        break;
+                    }
+                }
+                sym->type->func.return_type = inferred;
+            }
+            
+            // Check body
             Type* prev_return_type = checker->current_function_return_type;
             checker->current_function_return_type = sym->type->func.return_type;
             

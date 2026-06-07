@@ -76,7 +76,7 @@ END</code></pre>
 
             <h2>4. Translating to Shank Basics</h2>
             <p>Once you have a solid flowchart and pseudocode, translating it into Shank is a breeze. Shank is designed to be highly readable, borrowing Python's indentation-based syntax while providing the performance of a compiled language like C.</p>
-            <p>Let's look at a basic Shank program. Every standalone Shank script or executable begins execution from the top down, or from a designated <code>main</code> function.</p>
+            <p>Let's look at a basic Shank program. Every standalone Shank script begins execution from the top down. There is no boilerplate or mandatory <code>main</code> function needed!</p>
             <div class="code-window">
                 <div class="code-header">
                     <span class="mac-btn close"></span>
@@ -85,20 +85,16 @@ END</code></pre>
                 </div>
                 <div class="code-content">
                     <pre><code><span class="token comment"># This is a comment in Shank. The compiler ignores it.</span>
-<span class="token keyword">import</span> std
 
-<span class="token keyword">fn</span> <span class="token function">main</span>() -> <span class="token keyword">int</span>:
-    <span class="token keyword">let</span> message: <span class="token keyword">str</span> = <span class="token string">"Hello, World!"</span>
-    std.print(message)
-    <span class="token keyword">return</span> <span class="token keyword">0</span></code></pre>
+<span class="token keyword">im str</span> message <span class="token operator">=</span> <span class="token string">"Hello, World!"</span>
+<span class="token keyword">out</span> message</code></pre>
                 </div>
             </div>
             <p>In the above example:</p>
             <ul>
-                <li><code>import std</code> brings in the standard library, which gives us access to basic functions like printing.</li>
-                <li><code>fn main() -> int:</code> defines the starting point of our program. It returns an integer (usually 0 for success).</li>
-                <li>Notice the indentation! Shank does not use curly braces <code>{}</code>. The indented block indicates that the code belongs to the <code>main</code> function.</li>
-                <li><code>let</code> is used to declare a variable.</li>
+                <li><code>im str</code> defines an immutable variable of type string.</li>
+                <li><code>out</code> prints the variable to the screen natively.</li>
+                <li>Notice there are no semicolons, no curly braces, and no <code>fn main():</code> wrapper! Shank is designed to be as clean as possible.</li>
             </ul>
 
             <h2>5. Common Mistakes for Beginners</h2>
