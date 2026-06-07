@@ -4,94 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shank Programming Language</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #0d1117;
-            color: #c9d1d9;
-            font-family: 'Inter', sans-serif;
-            font-size: 16px;
-        }
-        a { color: #58a6ff; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-
-        .nav {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1rem 2rem;
-            border-bottom: 1px solid #21262d;
-        }
-        .nav-logo { color: #e6edf3; font-weight: 700; font-size: 1.1rem; text-decoration: none; }
-        .nav-right { display: flex; gap: 1.5rem; font-size: 0.9rem; }
-
-        .main {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 5rem 2rem;
-        }
-        .main h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #e6edf3;
-            margin-bottom: 1rem;
-            line-height: 1.3;
-        }
-        .main p {
-            color: #8b949e;
-            font-size: 1rem;
-            line-height: 1.7;
-            margin-bottom: 1.5rem;
-        }
-        .buttons {
-            display: flex; gap: 0.75rem; margin-top: 2rem;
-        }
-        .buttons a {
-            padding: 0.55rem 1.2rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .btn-primary { background: #238636; color: #fff; }
-        .btn-primary:hover { background: #2ea043; text-decoration: none; }
-        .btn-secondary { border: 1px solid #30363d; color: #c9d1d9; }
-        .btn-secondary:hover { border-color: #58a6ff; text-decoration: none; }
-
-        .footer {
-            text-align: center;
-            padding: 2rem;
-            color: #484f58;
-            font-size: 0.8rem;
-            border-top: 1px solid #21262d;
-            margin-top: 6rem;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="nav">
-    <a href="index.html" class="nav-logo">Shank</a>
-    <div class="nav-right">
-        <a href="docs.html">Docs</a>
-        <a href="https://github.com/shashankxingh/shank">GitHub</a>
+<nav class="topbar">
+    <a href="index.html" class="topbar-logo"><span>⚡</span> Shank</a>
+    <div class="topbar-links">
+        <a href="docs.html">Documentation</a>
+        <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+    </div>
+</nav>
+
+<div class="hero">
+    <h1>A compiled language that doesn't waste your time.</h1>
+    <p>Shank compiles to native x86-64 machine code. Write clean, indentation-based syntax. Get a standalone Windows executable. No runtime, no interpreter, no boilerplate.</p>
+    
+    <div class="cli-box">
+        <span class="prompt">$</span>
+        <span class="cmd">shank run hello.sk</span>
+        <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="navigator.clipboard.writeText('shank run hello.sk')"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+    </div>
+
+    <div>
+        <a href="https://github.com/shashankxingh/shank/raw/main/release/Shank_Setup_v0.1.0_win64.exe" class="btn-primary">Download v0.1</a>
     </div>
 </div>
 
-<div class="main">
-    <h1>Shank</h1>
-    <p>A compiled programming language with Python-like syntax. Compiles to native x86-64 machine code. Produces standalone Windows executables.</p>
-    <p>Version 0.1 — Windows only.</p>
-    <div style="background:#161b22;border:1px solid #21262d;border-radius:6px;padding:0.8rem 1.2rem;margin:1.5rem 0;font-family:'Fira Code',Consolas,monospace;font-size:0.88rem;color:#8b949e;overflow-x:auto;">
-        <span style="color:#8b949e;">$</span> <span style="color:#c9d1d9;">shank run hello.sk</span><br>
-        <span style="color:#7ee787;">Hello, World!</span>
-    </div>
-    <div class="buttons">
-        <a href="https://github.com/shashankxingh/shank/raw/main/release/Shank_Setup_v0.1.0_win64.exe" class="btn-primary">Download</a>
-        <a href="docs.html" class="btn-secondary">Documentation</a>
-    </div>
-</div>
-
-<div class="footer">&copy; 2026 Shashank Singh</div>
+<div class="footer">&copy; 2026 Shashank Singh. Open source under the MIT License.</div>
 
 </body>
 </html>
