@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Types & Coercion — Shank 0.1 Documentation</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>⚡</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs-variables.html">Documentation</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Deep Dives</div>
+                <a href="docs-variables.html">Variables & Mutability</a>
+                <a href="docs-types.html" class="active">Types & Coercion</a>
+                <a href="#">Operators & Math (Coming Soon)</a>
+                <a href="#">Control Flow (Coming Soon)</a>
+                <a href="#">Loops & Iteration (Coming Soon)</a>
+                <a href="#">Functions (Coming Soon)</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Data Types & Coercion</h1>
+            <p class="subtitle">An exhaustive deep-dive into Shank's type system, primitive memory sizes, and the casting operator (<code class="inline">-&gt;</code>).</p>
+
+            <p>Shank is a strictly, statically typed compiled language. Type enforcement happens purely at compile time during the AST semantic analysis phase (`src/checker.c`). By enforcing types before execution, Shank eliminates massive categories of runtime exceptions.</p>
+
+            <hr>
+
+            <h2>1. Primitive Data Types</h2>
+            <p>Shank provides four fundamental primitive types, mapped directly to their corresponding raw x86-64 hardware registers or memory blocks. Each occupies exactly 8 bytes (a QWORD) on the stack, ensuring perfectly aligned memory accesses without complex padding algorithms.</p>
+
+            <h3>The <code class="inline">int</code> Type</h3>
+            <p>A 64-bit signed integer. Handled internally in general-purpose integer registers like `rax` and `rcx`.</p>
+            <ul>
+                <li><strong>Range:</strong> -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807</li>
+                <li><strong>Declaration:</strong> <code class="inline">im int x = 42</code></li>
+                <li><strong>Usage:</strong> Ideal for absolute quantities, math, indexing, and counters.</li>
+            </ul>
+
+            <h3>The <code class="inline">float</code> Type</h3>
+            <p>A 64-bit IEEE 754 double-precision floating-point number. Handled internally in SSE/AVX registers like `xmm0` and `xmm1`.</p>
+            <ul>
+                <li><strong>Declaration:</strong> <code class="inline">im float pi = 3.14159</code></li>
+                <li><strong>Usage:</strong> Required for fractional arithmetic. Shank enforces a strict barrier between `int` and `float` calculations. You cannot blindly multiply an `int` with a `float` without explicit coercion.</li>
+            </ul>
+
+            <h3>The <code class="inline">bool</code> Type</h3>
+            <p>A logical boolean indicating `true` or `false`. Even though a boolean only requires a single bit (and conceptually 1 byte, e.g., `al` register), Shank aligns it into an 8-byte stack block for seamless execution speed.</p>
+            <ul>
+                <li><strong>Values:</strong> <code class="inline">true</code> (maps to integer 1), <code class="inline">false</code> (maps to integer 0).</li>
+                <li><strong>Declaration:</strong> <code class="inline">im bool is_ready = true</code></li>
+            </ul>
+
+            <h3>The <code class="inline">str</code> Type</h3>
+            <p>A 64-bit memory pointer pointing to a null-terminated UTF-8 sequence residing in the binary's data section (`.data`) or allocated heap.</p>
+            <ul>
+                <li><strong>Declaration:</strong> <code class="inline">im str msg = "Welcome!"</code></li>
+                <li><strong>F-Strings:</strong> Shank natively supports string interpolation via the <code class="inline">f""</code> literal. <br> <code class="inline">im str greeting = f"Hello, {name}"</code></li>
+            </ul>
+
+            <hr>
+
+            <h2>2. Type Coercion (The Arrow Operator)</h2>
+            <p>Because Shank strictly isolates types, you cannot implicitly pass an `int` where a `str` is expected, or perform arithmetic between an `int` and a `float` without an explicit conversion boundary. This is where the highly specific <strong>Casting Arrow (<code class="inline">-&gt;</code>)</strong> comes into play.</p>
+
+            <h3>Basic Syntax</h3>
+            <p>You cast an expression by appending <code class="inline">-&gt; type_name</code> to it.</p>
+            <pre><code><span class="kw">im</span> <span class="type">int</span> age <span class="op">=</span> <span class="num">25</span>
+<span class="kw">im</span> <span class="type">str</span> display <span class="op">=</span> age <span class="op">-></span> str   <span class="cm"># Converts 25 into "25"</span></code></pre>
+
+            <h3>Coercion Scenarios</h3>
+            <p>The `src/checker.c` engine rigorously verifies your cast before allowing compilation to proceed. Valid casts include:</p>
+
+            <ul>
+                <li><strong><code class="inline">str -> int</code></strong>: Safely parses a string into a 64-bit integer. Useful when parsing terminal input.<br>
+                <code class="inline">im int x = "100" -> int</code></li>
+                <li><strong><code class="inline">str -> float</code></strong>: Parses a string into double-precision float.<br>
+                <code class="inline">im float y = "3.14" -> float</code></li>
+                <li><strong><code class="inline">int -> str</code></strong> / <strong><code class="inline">float -> str</code></strong> / <strong><code class="inline">bool -> str</code></strong>: Allocates memory and stringifies the underlying primitive for formatting or concatenating operations.</li>
+            </ul>
+
+            <div class="warn">
+                <strong>Invalid Cast Protections:</strong> Shank prevents nonsensical casts. Attempting to cast an arbitrary type to an undefined struct or failing to adhere to the primitive bounds will trigger a fatal `Invalid cast from 'x' to 'y'` error.
+            </div>
+
+            <hr>
+
+            <h2>3. F-Strings (Interpolation)</h2>
+            <p>Often, you need to combine integers, strings, and floats together. Instead of chaining multiple <code class="inline">-&gt; str</code> casts, Shank integrates a dedicated <code class="inline">TOK_FSTR_START</code> lexical parser.</p>
+            <p>By simply prefixing your string with <code class="inline">f</code>, any expression inside `{}` is automatically evaluated and cleanly cast to a string by the backend.</p>
+
+            <pre><code><span class="kw">im</span> <span class="type">int</span> score <span class="op">=</span> <span class="num">99</span>
+<span class="kw">im</span> <span class="type">str</span> name <span class="op">=</span> <span class="str">"Player One"</span>
+
+<span class="kw">out</span> f<span class="str">"Result: {name} achieved {score} points."</span></code></pre>
+
+            <div class="page-nav">
+                <a href="docs-variables.html">← Variables & Mutability</a>
+                <a href="#">Next: Operators & Math →</a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>

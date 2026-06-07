@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variables & Mutability — Shank 0.1 Documentation</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>⚡</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs-variables.html">Documentation</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Deep Dives</div>
+                <a href="docs-variables.html" class="active">Variables & Mutability</a>
+                <a href="#">Types & Coercion (Coming Soon)</a>
+                <a href="#">Operators & Math (Coming Soon)</a>
+                <a href="#">Control Flow (Coming Soon)</a>
+                <a href="#">Loops & Iteration (Coming Soon)</a>
+                <a href="#">Functions (Coming Soon)</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Variables & Mutability</h1>
+            <p class="subtitle">An exhaustive deep-dive into how Shank allocates, scopes, and protects memory.</p>
+
+            <p>Unlike dynamic languages that allow variables to change types or be overwritten arbitrarily, Shank enforces <strong>strict memory mutability</strong>. This guarantees that data you expect to remain constant cannot be accidentally overwritten, preventing a massive class of runtime logic bugs.</p>
+
+            <hr>
+
+            <h2>1. Immutable Variables (<code class="inline">im</code>)</h2>
+            <p>By default, all data in Shank should be declared as Immutable using the <code class="inline">im</code> keyword. Once an <code class="inline">im</code> variable is allocated and assigned a value on the stack, that memory address is <strong>locked</strong>. It can never be reassigned.</p>
+
+            <h3>Basic Syntax</h3>
+            <pre><code><span class="kw">im</span> <span class="type">int</span> limit <span class="op">=</span> <span class="num">100</span>
+<span class="kw">im</span> <span class="type">str</span> name <span class="op">=</span> <span class="str">"Shank"</span></code></pre>
+
+            <h3>Type Inference</h3>
+            <p>Shank's Type Checker (`src/checker.c`) is intelligent enough to infer the type of a variable if you provide an initial value. You can omit the explicit type declaration:</p>
+            <pre><code><span class="kw">im</span> limit <span class="op">=</span> <span class="num">100</span>       <span class="cm"># Inferred as int</span>
+<span class="kw">im</span> is_active <span class="op">=</span> <span class="kw">true</span>  <span class="cm"># Inferred as bool</span></code></pre>
+
+            <h3>The Protection Mechanism</h3>
+            <p>If you attempt to assign a new value to an `im` variable, the compilation will fail immediately with a fatal error. The compiler will refuse to generate x86-64 assembly.</p>
+            <pre><code><span class="kw">im</span> <span class="type">int</span> days <span class="op">=</span> <span class="num">7</span>
+days <span class="op">=</span> <span class="num">8</span>  <span class="cm"># FATAL: Cannot assign to immutable variable 'days'</span></code></pre>
+
+            <hr>
+
+            <h2>2. Mutable Variables (<code class="inline">mut</code>)</h2>
+            <p>If an algorithm fundamentally requires modifying memory in place (for example, accumulating a sum in a loop), you must explicitly opt-in to mutability using the <code class="inline">mut</code> keyword.</p>
+
+            <pre><code><span class="kw">mut</span> <span class="type">int</span> total <span class="op">=</span> <span class="num">0</span>
+
+<span class="kw">repeat</span> <span class="num">5</span> <span class="kw">as</span> i:
+    total <span class="op">=</span> total <span class="op">+</span> i  <span class="cm"># Perfectly valid, total is mutable.</span>
+
+<span class="kw">out</span> f<span class="str">"Total is {total}"</span></code></pre>
+
+            <div class="note">
+                <strong>Best Practice:</strong> Always default to <code>im</code>. Only upgrade a variable to <code>mut</code> if the compiler complains when you attempt to reassign it. This minimizes side-effects and makes code highly predictable.
+            </div>
+
+            <hr>
+
+            <h2>3. Input Assignment via <code class="inline">put</code></h2>
+            <p>When requesting user input using the <code class="inline">put</code> keyword, the Type Checker performs an advanced <strong>backward-resolution</strong> to determine what type to cast the input into.</p>
+
+            <pre><code><span class="kw">im</span> <span class="type">int</span> age <span class="op">=</span> <span class="kw">put</span> <span class="str">"Enter your age: "</span></code></pre>
+            <p>In the above example, because `age` is strictly typed as an `int`, the compiler automatically casts the raw string input from the user into a 64-bit integer. If you do not provide a type, it defaults to a `str`.</p>
+            <pre><code><span class="kw">im</span> name <span class="op">=</span> <span class="kw">put</span>(<span class="str">"Enter name: "</span>) <span class="cm"># name inferred as str</span></code></pre>
+
+            <hr>
+
+            <h2>4. Scope & Shadowing Rules</h2>
+            <p>Variables in Shank are block-scoped. When an indentation block (`when`, `repeat`, `fn`) terminates, all variables declared within that block are popped off the symbol table.</p>
+
+            <h3>Shadowing Prohibition</h3>
+            <p>To prevent extremely difficult-to-track bugs, Shank <strong>forbids</strong> variable shadowing within the same scope. You cannot declare a variable with the same name twice in the same block.</p>
+            <pre><code><span class="kw">im</span> x <span class="op">=</span> <span class="num">10</span>
+<span class="kw">im</span> x <span class="op">=</span> <span class="num">20</span> <span class="cm"># FATAL: Variable 'x' already defined in this scope</span></code></pre>
+
+            <hr>
+
+            <h2>5. Under the Hood: The Compiler Backend</h2>
+            <p>When you declare an `im` or `mut` variable, what does Shank actually do with your CPU and RAM? Let's look at the generated x86-64 assembly in `src/codegen.c`.</p>
+
+            <h3>The Symbol Table to Stack Frame Translation</h3>
+            <p>During the AST traversal, the Type Checker stores the variable in a Hash Map (the Symbol Table) and assigns it a "stack offset" (e.g., `-8`, `-16`).</p>
+            <p>During the Code Generation phase, Shank emits instructions that allocate space on the Base Pointer (`rbp`) stack frame. All `int`, `float`, and pointer variables require exactly 8 bytes (a QWORD) on 64-bit systems.</p>
+            
+            <p>For example, compiling <code class="inline">im int limit = 100</code> yields the following raw instructions:</p>
+            <pre><code>mov rax, 100       <span class="cm">; Load 100 into the rax register</span>
+mov [rbp-8], rax   <span class="cm">; Store the value onto the stack at offset -8</span></code></pre>
+
+            <p>Because `limit` was declared as `im`, the C-based Type Checker refuses to emit any subsequent `mov [rbp-8], <value>` instructions, completely locking the memory safely at compile time!</p>
+
+            <div class="page-nav">
+                <a href="#"></a>
+                <a href="#">Next: Types & Coercion →</a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>
