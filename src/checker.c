@@ -374,6 +374,10 @@ static void check_stmt(Checker* checker, Node* stmt) {
             check_expr(checker, stmt->expr);
             break;
         }
+        case NODE_OUTT: {
+            check_expr(checker, stmt->expr);
+            break;
+        }
 
         
         case NODE_ASSIGN: {

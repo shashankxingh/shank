@@ -232,6 +232,18 @@ counter <span class="op">=</span> <span class="num">99</span>
 <span class="kw">out</span> <span class="num">3.14</span>          <span class="cm"># float</span>
 <span class="kw">out</span> <span class="kw">true</span>          <span class="cm"># bool</span></code></pre>
 
+<h3>Printing without a newline — <code>outt</code></h3>
+
+<p>Use <code>outt</code> when you want to print something but keep the cursor on the same line.</p>
+
+<pre><code><span class="kw">outt</span> <span class="str">"Loading"</span>
+<span class="kw">outt</span> <span class="str">"."</span>
+<span class="kw">outt</span> <span class="str">"."</span>
+<span class="kw">out</span> <span class="str">" Done!"</span></code></pre>
+
+<p>Output:</p>
+<pre><code>Loading.. Done!</code></pre>
+
 <p>You can print the result of any expression:</p>
 
 <pre><code><span class="kw">im</span> <span class="type">int</span> x <span class="op">=</span> <span class="num">10</span>

@@ -423,6 +423,33 @@ static void gen_stmt(Codegen* cg, Node* stmt) {
             emit(cg, "add rsp, 32");
             break;
         }
+
+        case NODE_OUTT: {
+            gen_expr(cg, stmt->expr);
+            if (stmt->expr->resolved_type == type_str) {
+                emit(cg, "mov rcx, rax"); // pointer
+                emit(cg, "mov rdx, r10"); // length
+                emit(cg, "sub rsp, 32"); // shadow space
+                emit(cg, "call sk_print_str");
+                emit(cg, "add rsp, 32");
+            } else if (stmt->expr->resolved_type == type_float) {
+                emit(cg, "movq rcx, xmm0");
+                emit(cg, "sub rsp, 32");
+                emit(cg, "call sk_print_float");
+                emit(cg, "add rsp, 32");
+            } else if (stmt->expr->resolved_type == type_bool) {
+                emit(cg, "mov rcx, rax");
+                emit(cg, "sub rsp, 32");
+                emit(cg, "call sk_print_bool");
+                emit(cg, "add rsp, 32");
+            } else {
+                emit(cg, "mov rcx, rax");
+                emit(cg, "sub rsp, 32");
+                emit(cg, "call sk_print_int");
+                emit(cg, "add rsp, 32");
+            }
+            break;
+        }
         
         case NODE_ASSIGN: {
             if (stmt->assign.assign_target->kind == NODE_IDENT) {
