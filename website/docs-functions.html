@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functions — Shank 0.1 Documentation</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>⚡</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs-variables.html">Documentation</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Deep Dives</div>
+                <a href="docs-variables.html">Variables & Mutability</a>
+                <a href="docs-types.html">Types & Coercion</a>
+                <a href="docs-operators.html">Operators & Math</a>
+                <a href="docs-conditionals.html">Control Flow</a>
+                <a href="docs-loops.html">Loops & Iteration</a>
+                <a href="docs-functions.html" class="active">Functions</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Functions</h1>
+            <p class="subtitle">An exhaustive deep-dive into Shank's function mechanics, calling conventions, and stack frame generation.</p>
+
+            <p>Functions in Shank are pure, strictly typed logical boundaries. Shank implements the native Microsoft x64 ABI (Application Binary Interface) calling convention directly, allowing Shank functions to be extremely fast and theoretically interoperable with native C code.</p>
+
+            <hr>
+
+            <h2>1. Defining Functions</h2>
+            <p>Functions are defined using the <code class="inline">fn</code> keyword. You must declare the types of all arguments. The compiler accepts both modern Python-style annotations (`name: type`) and classic C-style prefixes (`type name`).</p>
+
+            <h3>Basic Syntax</h3>
+            <pre><code><span class="kw">fn</span> add(a: <span class="type">int</span>, b: <span class="type">int</span>) <span class="op">-></span> <span class="type">int</span>:
+    <span class="kw">return</span> a <span class="op">+</span> b</code></pre>
+
+            <h3>Return Semantics</h3>
+            <p>The <code class="inline">-&gt;</code> operator defines the return type. If a function does not return a value, you can omit the arrow entirely, or explicitly return <code class="inline">none</code>. Every branch of a function that returns a value must explicitly terminate with a <code class="inline">return</code> keyword.</p>
+
+            <pre><code><span class="kw">fn</span> greet(name: <span class="type">str</span>):
+    <span class="kw">out</span> f<span class="str">"Hello, {name}!"</span>
+    <span class="cm"># Implicit return</span></code></pre>
+
+            <hr>
+
+            <h2>2. Calling Functions</h2>
+            <p>Functions are invoked using standard parenthesis notation. Shank enforces strict arity (argument count) and strict type matching during the Semantic Checking phase.</p>
+
+            <pre><code><span class="kw">im</span> <span class="type">int</span> total <span class="op">=</span> add(<span class="num">10</span>, <span class="num">20</span>)</code></pre>
+
+            <div class="warn">
+                <strong>Type Enforcement:</strong> You cannot pass a <code class="inline">str</code> to an <code class="inline">int</code> argument. Attempting to call <code class="inline">add("10", 20)</code> will trigger a compiler error before assembly generation begins.
+            </div>
+
+            <hr>
+
+            <h2>3. Under the Hood: The x64 Calling Convention</h2>
+            <p>To understand why Shank functions are so fast, we have to look at the assembly emitted by `src/codegen.c`. Shank does not build a heavy virtual machine call stack; it talks directly to the CPU registers.</p>
+
+            <h3>The Prologue and Epilogue</h3>
+            <p>When you define a function, Shank immediately generates an assembly label prefixed with <code class="inline">sk_</code>, followed by the classic C-style stack prologue.</p>
+            <pre><code>global sk_add
+sk_add:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 000032  <span class="cm">; Dynamically patched local stack reservation</span></code></pre>
+            
+            <p>When <code class="inline">return</code> is called, the compiler emits the epilogue, instantly destroying the stack frame and passing control back to the caller.</p>
+            <pre><code>    mov rsp, rbp
+    pop rbp
+    ret</code></pre>
+
+            <h3>Register Argument Passing</h3>
+            <p>To minimize slow RAM access, Shank adheres to the Microsoft x64 fast-call convention. The first four arguments are passed directly into CPU registers, not the stack:</p>
+            <ul>
+                <li><strong>Argument 1:</strong> <code class="inline">rcx</code></li>
+                <li><strong>Argument 2:</strong> <code class="inline">rdx</code></li>
+                <li><strong>Argument 3:</strong> <code class="inline">r8</code></li>
+                <li><strong>Argument 4:</strong> <code class="inline">r9</code></li>
+            </ul>
+
+            <p>If you call `add(10, 20)`, the compiler generates <code class="inline">mov rcx, 10</code> and <code class="inline">mov rdx, 20</code>, and then executes <code class="inline">call sk_add</code>.</p>
+            
+            <h3>Return Values</h3>
+            <p>Return values are always passed back through the <code class="inline">rax</code> register. When evaluating `a + b` in the example above, the result is computed into `rax`, and the `ret` instruction leaves it there for the caller to immediately utilize.</p>
+
+            <div class="page-nav">
+                <a href="docs-loops.html">← Loops & Iteration</a>
+                <a href="#"></a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>

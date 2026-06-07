@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operators & Math — Shank 0.1 Documentation</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>⚡</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs-variables.html">Documentation</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Deep Dives</div>
+                <a href="docs-variables.html">Variables & Mutability</a>
+                <a href="docs-types.html">Types & Coercion</a>
+                <a href="docs-operators.html" class="active">Operators & Math</a>
+                <a href="#">Control Flow (Coming Soon)</a>
+                <a href="#">Loops & Iteration (Coming Soon)</a>
+                <a href="#">Functions (Coming Soon)</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Operators & Math</h1>
+            <p class="subtitle">An exhaustive deep-dive into Shank's arithmetic, logical operators, precedence climbing, and their direct mappings to x86-64 CPU instructions.</p>
+
+            <p>Unlike dynamic languages that use heavy runtime wrappers to handle math operations (like Python objects), Shank translates every operator into raw, single-cycle or multi-cycle CPU hardware instructions.</p>
+
+            <hr>
+
+            <h2>1. Arithmetic Operators</h2>
+            <p>Arithmetic in Shank strictly adheres to type boundaries. You cannot perform an operation between an <code class="inline">int</code> and a <code class="inline">float</code> without an explicit <code class="inline">-&gt;</code> cast.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operator</th>
+                        <th>Name</th>
+                        <th>Types Supported</th>
+                        <th>Under-the-hood Assembly</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="inline">+</code></td>
+                        <td>Addition</td>
+                        <td>int, float</td>
+                        <td><code class="inline">add rax, rcx</code> (int), <code class="inline">addsd xmm0, xmm1</code> (float)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">-</code></td>
+                        <td>Subtraction</td>
+                        <td>int, float</td>
+                        <td><code class="inline">sub rax, rcx</code> (int), <code class="inline">subsd xmm0, xmm1</code> (float)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">*</code></td>
+                        <td>Multiplication</td>
+                        <td>int, float</td>
+                        <td><code class="inline">imul rax, rcx</code> (int), <code class="inline">mulsd xmm0, xmm1</code> (float)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">/</code></td>
+                        <td>Division</td>
+                        <td>int, float</td>
+                        <td><code class="inline">cqo; idiv rcx</code> (int, truncates remainder), <code class="inline">divsd</code> (float)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="inline">%</code></td>
+                        <td>Modulus</td>
+                        <td>int only</td>
+                        <td><code class="inline">cqo; idiv rcx; mov rax, rdx</code> (Fetches remainder from rdx)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Example: Modulus Constraints</h3>
+            <p>Modulus (`%`) strictly targets `int` types to compute remainders. Attempting to use `%` on a `float` results in a fatal compiler error.</p>
+            <pre><code><span class="kw">im</span> <span class="type">int</span> remainder <span class="op">=</span> <span class="num">10</span> <span class="op">%</span> <span class="num">3</span>  <span class="cm"># remainder is 1</span></code></pre>
+
+            <hr>
+
+            <h2>2. Relational Operators</h2>
+            <p>Relational operators compare two values of the <strong>exact same type</strong> and always return a <code class="inline">bool</code> (0 or 1). At the assembly level, these use the <code class="inline">cmp</code> instruction followed by `set*` condition codes.</p>
+
+            <ul>
+                <li><code class="inline">==</code> (Equality): Emits `sete al`</li>
+                <li><code class="inline">!=</code> (Inequality): Emits `setne al`</li>
+                <li><code class="inline"><</code> (Less than): Emits `setl al`</li>
+                <li><code class="inline">></code> (Greater than): Emits `setg al`</li>
+                <li><code class="inline"><=</code> (Less than or equal): Emits `setle al`</li>
+                <li><code class="inline">>=</code> (Greater than or equal): Emits `setge al`</li>
+            </ul>
+
+            <pre><code><span class="kw">im</span> <span class="type">bool</span> is_adult <span class="op">=</span> age <span class="op">>=</span> <span class="num">18</span></code></pre>
+
+            <hr>
+
+            <h2>3. Logical Operators</h2>
+            <p>Logical operators in Shank are built for speed. They enforce that both boundaries are strictly `bool` types, which allows the backend to utilize direct bitwise CPU operations instead of branching jumps, completely eliminating branch misprediction penalties on the CPU!</p>
+
+            <ul>
+                <li><code class="inline">and</code>: Logical AND. Compiles directly to <code class="inline">and rax, rcx</code>.</li>
+                <li><code class="inline">or</code>: Logical OR. Compiles directly to <code class="inline">or rax, rcx</code>.</li>
+                <li><code class="inline">not</code>: Logical NOT. Flips the boolean state using <code class="inline">xor rax, 1</code>.</li>
+            </ul>
+
+            <pre><code><span class="kw">im</span> <span class="type">int</span> x <span class="op">=</span> <span class="num">5</span>
+<span class="kw">im</span> <span class="type">bool</span> valid <span class="op">=</span> (x <span class="op">></span> <span class="num">0</span>) <span class="kw">and</span> (x <span class="op"><</span> <span class="num">10</span>)</code></pre>
+
+            <div class="note">
+                <strong>Why bitwise?</strong> Because Shank represents `true` as exactly 1 and `false` as exactly 0, an assembly-level `and` instruction successfully computes `(1 AND 0 = 0)`, creating an incredibly fast, non-branching evaluation.
+            </div>
+
+            <hr>
+
+            <h2>4. Operator Precedence (Pratt Parsing)</h2>
+            <p>Shank's compiler (`src/parser.c`) resolves math using a Recursive Descent Pratt Parsing algorithm. The precedence rules closely mirror mathematics (PEMDAS), determining how AST nodes are grouped before they are ever sent to code generation.</p>
+
+            <ol>
+                <li><strong>Parentheses:</strong> <code class="inline">( expression )</code> (Highest)</li>
+                <li><strong>Logical NOT / Unary Minus:</strong> <code class="inline">not</code>, <code class="inline">-</code></li>
+                <li><strong>Multiplication / Division / Modulus:</strong> <code class="inline">*</code>, <code class="inline">/</code>, <code class="inline">%</code></li>
+                <li><strong>Addition / Subtraction:</strong> <code class="inline">+</code>, <code class="inline">-</code></li>
+                <li><strong>Relational:</strong> <code class="inline">==</code>, <code class="inline">!=</code>, <code class="inline"><</code>, <code class="inline">></code>, <code class="inline"><=</code>, <code class="inline">>=</code></li>
+                <li><strong>Logical AND:</strong> <code class="inline">and</code></li>
+                <li><strong>Logical OR:</strong> <code class="inline">or</code> (Lowest)</li>
+            </ol>
+
+            <pre><code><span class="kw">im</span> <span class="type">int</span> result <span class="op">=</span> <span class="num">10</span> <span class="op">+</span> <span class="num">5</span> <span class="op">*</span> <span class="num">2</span> <span class="cm"># Computes to 20, not 30!</span></code></pre>
+
+            <div class="page-nav">
+                <a href="docs-types.html">← Types & Coercion</a>
+                <a href="#">Next: Control Flow →</a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>

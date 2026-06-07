@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loops & Iteration — Shank 0.1 Documentation</title>
+    <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+    <div class="topbar">
+        <a href="index.html" class="topbar-logo"><span>⚡</span> Shank</a>
+        <div class="topbar-links">
+            <a href="docs-variables.html">Documentation</a>
+            <a href="https://github.com/shashankxingh/shank" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <div class="layout wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Deep Dives</div>
+                <a href="docs-variables.html">Variables & Mutability</a>
+                <a href="docs-types.html">Types & Coercion</a>
+                <a href="docs-operators.html">Operators & Math</a>
+                <a href="docs-conditionals.html">Control Flow</a>
+                <a href="docs-loops.html" class="active">Loops & Iteration</a>
+                <a href="#">Functions (Coming Soon)</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <h1>Loops & Iteration</h1>
+            <p class="subtitle">An exhaustive deep-dive into Shank's bounded `repeat` loops, conditional `while` loops, and iteration mutability.</p>
+
+            <p>Unlike dynamic languages that abstract loops over arbitrary objects via iterators, Shank handles looping strictly at the stack level. The compiler natively maps iteration logic directly to x86-64 unconditional jumps (`jmp`) and loop evaluators without relying on runtime garbage collection.</p>
+
+            <hr>
+
+            <h2>1. Bounded Iteration: <code class="inline">repeat</code></h2>
+            <p>The primary and safest way to loop in Shank is the `repeat` keyword. It provides mathematically bounded iteration over a strictly evaluated integer count.</p>
+
+            <h3>Basic Repetition</h3>
+            <p>If you don't need access to the loop's current iteration count, simply provide an `int` to `repeat`.</p>
+
+            <pre><code><span class="kw">repeat</span> <span class="num">3</span>:
+    <span class="kw">out</span> <span class="str">"Connecting to server..."</span></code></pre>
+
+            <h3>Accessing the Index with <code class="inline">as</code></h3>
+            <p>Using the `as` keyword instantly binds the current iteration count (starting at 0) to a highly protected, scope-locked `im` variable.</p>
+
+            <pre><code><span class="kw">repeat</span> <span class="num">5</span> <span class="kw">as</span> i:
+    <span class="kw">out</span> f<span class="str">"Processing item {i}"</span></code></pre>
+
+            <div class="note">
+                <strong>Memory Mutability:</strong> The loop variable <code>i</code> is <strong>Strictly Immutable</strong>. If you attempt to reassign <code>i</code> inside the block (e.g., <code>i = 10</code>), the compiler's semantic phase will instantly halt the build. You cannot accidentally skip loop ticks.
+            </div>
+
+            <hr>
+
+            <h2>2. Conditional Iteration: <code class="inline">while</code></h2>
+            <p>When you do not know the boundary of a loop at compile time (such as polling a socket or waiting for input), Shank implements a strict `while` loop.</p>
+
+            <h3>Syntax and Boolean Constraint</h3>
+            <p>Exactly like `when` statements, the `while` statement requires a strict `bool` expression. Treating an `int` or a `str` as a condition will result in a fatal type error.</p>
+
+            <pre><code><span class="kw">mut</span> <span class="type">int</span> battery <span class="op">=</span> <span class="num">100</span>
+
+<span class="kw">while</span> battery <span class="op">></span> <span class="num">0</span>:
+    <span class="kw">out</span> f<span class="str">"Running on {battery}%"</span>
+    battery <span class="op">=</span> battery <span class="op">-</span> <span class="num">10</span>
+
+<span class="kw">out</span> <span class="str">"Battery empty."</span></code></pre>
+
+            <hr>
+
+            <h2>3. Under the Hood: Assembly Translation</h2>
+            <p>The Code Generation phase (`src/codegen.c`) transforms loops into highly efficient register mathematics.</p>
+
+            <h3>The <code class="inline">while</code> Loop Mechanics</h3>
+            <p>A `while` loop translates into a top label (`.L_while_cond`) and a bottom jump. At the start of every iteration, the AST evaluates the condition into the `rax` register. If the boolean is `0` (`false`), the compiler emits a `je` (Jump if Equal) instruction to immediately bypass the entire block.</p>
+            <pre><code>.L_while_cond_1:
+    <span class="cm">; ... [Condition evaluation in rax] ...</span>
+    cmp rax, 0
+    je .L_while_end_1
+    
+    <span class="cm">; ... [Block Execution] ...</span>
+    jmp .L_while_cond_1
+.L_while_end_1:</code></pre>
+
+            <h3>The <code class="inline">repeat</code> Loop Mechanics</h3>
+            <p>Because `repeat` requires a named index variable, the backend actually <strong>allocates the index variable onto the Stack Pointer (`rbp`)</strong> just like a regular `let` variable. It initializes it to 0, evaluates the upper bound, and increments it mathematically at the end of the block. If you use nested `repeat` loops to build 2D grid patterns, the nested indices do not collide because they have distinct stack offsets (e.g., `rbp-16` and `rbp-24`).</p>
+
+            <div class="page-nav">
+                <a href="docs-conditionals.html">← Control Flow</a>
+                <a href="#">Next: Functions →</a>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">&copy; 2026 Shashank Singh</div>
+</body>
+</html>
