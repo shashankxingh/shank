@@ -49,7 +49,7 @@
             <p>Using the `as` keyword instantly binds the current iteration count (starting at 0) to a highly protected, scope-locked `im` variable.</p>
 
             <pre><code><span class="kw">repeat</span> <span class="num">5</span> <span class="kw">as</span> i:
-    <span class="kw">out</span> f<span class="str">"Processing item {i}"</span></code></pre>
+    <span class="kw">out</span> <span class="str">"Processing item {i}"</span></code></pre>
 
             <div class="note">
                 <strong>Memory Mutability:</strong> The loop variable <code>i</code> is <strong>Strictly Immutable</strong>. If you attempt to reassign <code>i</code> inside the block (e.g., <code>i = 10</code>), the compiler's semantic phase will instantly halt the build. You cannot accidentally skip loop ticks.

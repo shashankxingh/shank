@@ -65,7 +65,7 @@
             <p>A 64-bit memory pointer pointing to a null-terminated UTF-8 sequence residing in the binary's data section (`.data`) or allocated heap.</p>
             <ul>
                 <li><strong>Declaration:</strong> <code class="inline">im str msg = "Welcome!"</code></li>
-                <li><strong>F-Strings:</strong> Shank natively supports string interpolation via the <code class="inline">f""</code> literal. <br> <code class="inline">im str greeting = f"Hello, {name}"</code></li>
+                <li><strong>Interpolation:</strong> Shank natively supports string interpolation via the <code class="inline">"{variable}"</code> syntax. <br> <code class="inline">im str greeting = "Hello, {name}"</code></li>
             </ul>
 
             <hr>
@@ -95,14 +95,14 @@
 
             <hr>
 
-            <h2>3. F-Strings (Interpolation)</h2>
+            <h2>3. String Interpolation</h2>
             <p>Often, you need to combine integers, strings, and floats together. Instead of chaining multiple <code class="inline">-&gt; str</code> casts, Shank integrates a dedicated <code class="inline">TOK_FSTR_START</code> lexical parser.</p>
-            <p>By simply prefixing your string with <code class="inline">f</code>, any expression inside `{}` is automatically evaluated and cleanly cast to a string by the backend.</p>
+            <p>Any expression inside `{}` is automatically evaluated and cleanly cast to a string by the backend.</p>
 
             <pre><code><span class="kw">im</span> <span class="type">int</span> score <span class="op">=</span> <span class="num">99</span>
 <span class="kw">im</span> <span class="type">str</span> name <span class="op">=</span> <span class="str">"Player One"</span>
 
-<span class="kw">out</span> f<span class="str">"Result: {name} achieved {score} points."</span></code></pre>
+<span class="kw">out</span> <span class="str">"Result: {name} achieved {score} points."</span></code></pre>
 
             <div class="page-nav">
                 <a href="docs-variables.html">← Variables & Mutability</a>

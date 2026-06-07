@@ -63,8 +63,7 @@ days <span class="op">=</span> <span class="num">8</span>  <span class="cm"># FA
 <span class="kw">repeat</span> <span class="num">5</span> <span class="kw">as</span> i:
     total <span class="op">=</span> total <span class="op">+</span> i  <span class="cm"># Perfectly valid, total is mutable.</span>
 
-<span class="kw">outc</span> <span class="str">"Total is "</span>
-<span class="kw">out</span> total</code></pre>
+<span class="kw">out</span> <span class="str">"Total is {total}"</span></code></pre>
 
             <div class="note">
                 <strong>Best Practice:</strong> Always default to <code>im</code>. Only upgrade a variable to <code>mut</code> if the compiler complains when you attempt to reassign it. This minimizes side-effects and makes code highly predictable.
@@ -75,7 +74,7 @@ days <span class="op">=</span> <span class="num">8</span>  <span class="cm"># FA
             <h2>3. Input Assignment via <code class="inline">put</code></h2>
             <p>When requesting user input using the <code class="inline">put</code> keyword, the Type Checker performs an advanced <strong>backward-resolution</strong> to determine what type to cast the input into.</p>
 
-            <pre><code><span class="kw">im</span> <span class="type">int</span> age <span class="op">=</span> <span class="kw">put</span> <span class="str">"Enter your age: "</span></code></pre>
+            <pre><code><span class="kw">im</span> <span class="type">int</span> age <span class="op">=</span> <span class="kw">put</span>(<span class="str">"Enter your age: "</span>)</code></pre>
             <p>In the above example, because `age` is strictly typed as an `int`, the compiler automatically casts the raw string input from the user into a 64-bit integer. You must always provide a type for variables accepting input.</p>
             <pre><code><span class="kw">im</span> <span class="type">str</span> name <span class="op">=</span> <span class="kw">put</span>(<span class="str">"Enter name: "</span>)</code></pre>
 
