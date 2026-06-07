@@ -14,6 +14,8 @@ void lexer_init(Lexer* lexer, const char* source, const char* filename) {
     lexer->indent_depth = 1;
     lexer->pending_dedents = 0;
     lexer->is_at_line_start = 1;
+    lexer->in_fstr = 0;
+    lexer->brace_depth = 0;
 }
 
 static int is_at_end(Lexer* lexer) {
@@ -146,8 +148,8 @@ static Token number(Lexer* lexer, const char* start) {
     return token;
 }
 
-static Token string(Lexer* lexer, const char* start) {
-    while (peek(lexer) != '"' && !is_at_end(lexer)) {
+static Token string(Lexer* lexer, const char* start, int is_continuation) {
+    while (peek(lexer) != '"' && peek(lexer) != '{' && !is_at_end(lexer)) {
         if (peek(lexer) == '\n') {
             lexer->line++;
             lexer->line_start = lexer->current + 1;
@@ -157,8 +159,22 @@ static Token string(Lexer* lexer, const char* start) {
 
     if (is_at_end(lexer)) return error_token(lexer, "Unterminated string", start);
 
-    advance(lexer); // closing quote
-    return make_token(lexer, TOK_STR_LIT, start);
+    if (peek(lexer) == '"') {
+        advance(lexer); // closing quote
+        if (is_continuation) {
+            lexer->in_fstr = 0;
+            return make_token(lexer, TOK_FSTR_END, start);
+        } else {
+            return make_token(lexer, TOK_STR_LIT, start);
+        }
+    } else if (peek(lexer) == '{') {
+        advance(lexer); // consume {
+        lexer->in_fstr = 1;
+        lexer->brace_depth = 1;
+        return make_token(lexer, is_continuation ? TOK_FSTR_MID : TOK_FSTR_START, start);
+    }
+    
+    return error_token(lexer, "Unexpected string state", start);
 }
 
 Token lexer_next_token(Lexer* lexer) {
@@ -234,8 +250,20 @@ Token lexer_next_token(Lexer* lexer) {
         case ')': return make_token(lexer, TOK_RPAREN, start);
         case '[': return make_token(lexer, TOK_LBRACKET, start);
         case ']': return make_token(lexer, TOK_RBRACKET, start);
+        case '{': 
+            if (lexer->in_fstr) lexer->brace_depth++;
+            return make_token(lexer, TOK_LBRACE, start);
+        case '}':
+            if (lexer->in_fstr) {
+                lexer->brace_depth--;
+                if (lexer->brace_depth == 0) {
+                    return string(lexer, start, 1);
+                }
+            }
+            return make_token(lexer, TOK_RBRACE, start);
         case ':': return make_token(lexer, TOK_COLON, start);
         case ',': return make_token(lexer, TOK_COMMA, start);
+        case '"': return string(lexer, start, 0);
         
         case '.': 
             if (match(lexer, '.')) return make_token(lexer, TOK_DOTDOT, start);
@@ -266,8 +294,6 @@ Token lexer_next_token(Lexer* lexer) {
             
         case '%': return make_token(lexer, TOK_PERCENT, start);
         case '&': return make_token(lexer, TOK_AND, start); // simplification
-        case '|': return make_token(lexer, TOK_OR, start);
-        
         case '=':
             if (match(lexer, '=')) return make_token(lexer, TOK_EQ, start);
             return make_token(lexer, TOK_ASSIGN, start);
@@ -284,7 +310,14 @@ Token lexer_next_token(Lexer* lexer) {
             if (match(lexer, '=')) return make_token(lexer, TOK_GEQ, start);
             return make_token(lexer, TOK_GT, start);
             
-        case '"': return string(lexer, start);
+        case '|':
+            if (match(lexer, '|')) return make_token(lexer, TOK_OR, start);
+            return error_token(lexer, "Unexpected character", start);
+            
+        case ' ':
+        case '\r':
+        case '\t':
+            return error_token(lexer, "Unexpected character", start);
     }
 
     return error_token(lexer, "Unexpected character", start);

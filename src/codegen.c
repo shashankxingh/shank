@@ -99,6 +99,61 @@ static void gen_expr(Codegen* cg, Node* expr) {
             break;
         }
         
+        case NODE_INTERP_STR: {
+            if (expr->interp_str.count == 0) {
+                int lbl = cg->string_count++;
+                emit_data(cg, "str_%d db 0", lbl);
+                emit(cg, "lea rax, [rel str_%d]", lbl);
+                break;
+            }
+            
+            gen_expr(cg, expr->interp_str.exprs[0]);
+            Type* t = (Type*)expr->interp_str.exprs[0]->resolved_type;
+            if (t == type_int) {
+                emit(cg, "mov rcx, rax");
+                emit(cg, "sub rsp, 32"); emit(cg, "call sk_int_to_cstr"); emit(cg, "add rsp, 32");
+            } else if (t == type_float) {
+                emit(cg, "movq rcx, xmm0");
+                emit(cg, "sub rsp, 32"); emit(cg, "call sk_float_to_cstr"); emit(cg, "add rsp, 32");
+            } else if (t == type_bool) {
+                emit(cg, "mov rcx, rax");
+                emit(cg, "sub rsp, 32"); emit(cg, "call sk_bool_to_cstr"); emit(cg, "add rsp, 32");
+            }
+            
+            emit(cg, "push r12");
+            emit(cg, "sub rsp, 8"); // Align stack to 16 bytes
+            emit(cg, "mov r12, rax");
+            
+            for (int i = 1; i < expr->interp_str.count; i++) {
+                gen_expr(cg, expr->interp_str.exprs[i]);
+                Type* sub_t = (Type*)expr->interp_str.exprs[i]->resolved_type;
+                if (sub_t == type_int) {
+                    emit(cg, "mov rcx, rax");
+                    emit(cg, "sub rsp, 32"); emit(cg, "call sk_int_to_cstr"); emit(cg, "add rsp, 32");
+                } else if (sub_t == type_float) {
+                    emit(cg, "movq rcx, xmm0");
+                    emit(cg, "sub rsp, 32"); emit(cg, "call sk_float_to_cstr"); emit(cg, "add rsp, 32");
+                } else if (sub_t == type_bool) {
+                    emit(cg, "mov rcx, rax");
+                    emit(cg, "sub rsp, 32"); emit(cg, "call sk_bool_to_cstr"); emit(cg, "add rsp, 32");
+                }
+                
+                emit(cg, "mov rcx, r12");
+                emit(cg, "mov rdx, rax");
+                
+                emit(cg, "sub rsp, 32");
+                emit(cg, "call sk_interp_concat");
+                emit(cg, "add rsp, 32");
+                
+                emit(cg, "mov r12, rax");
+            }
+            
+            emit(cg, "mov rax, r12");
+            emit(cg, "add rsp, 8");
+            emit(cg, "pop r12");
+            break;
+        }
+        
         case NODE_BOOL_LIT:
             emit(cg, "mov rax, %d", expr->bool_val);
             break;
@@ -426,6 +481,10 @@ char* codegen_generate(Checker* checker, Node* program) {
     emit(&cg, "extern sk_print_newline");
     emit(&cg, "extern sk_alloc");
     emit(&cg, "extern sk_free");
+    emit(&cg, "extern sk_interp_concat");
+    emit(&cg, "extern sk_int_to_cstr");
+    emit(&cg, "extern sk_float_to_cstr");
+    emit(&cg, "extern sk_bool_to_cstr");
     emit(&cg, "extern ExitProcess\n");
     
     emit(&cg, "section .text\n");

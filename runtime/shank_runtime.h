@@ -32,6 +32,9 @@ SkString sk_str_new(const char* data, int64_t len);
 SkString sk_str_concat(SkString a, SkString b);
 int64_t sk_str_len(SkString s);
 int sk_str_eq(SkString a, SkString b);
+SkString sk_int_to_str(int64_t value);
+SkString sk_float_to_str(double value);
+SkString sk_bool_to_str(int8_t value);
 
 // Array operations
 SkArray sk_array_new(int64_t elem_size, int64_t initial_cap);

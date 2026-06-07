@@ -127,6 +127,55 @@ static Node* parse_string(Parser* parser) {
     return node;
 }
 
+static Node* parse_fstr(Parser* parser) {
+    Node* node = node_create(parser->arena, NODE_INTERP_STR, parser->previous.line, parser->previous.col);
+    
+    Node** exprs = NULL;
+    int count = 0;
+    int cap = 4;
+    exprs = (Node**)malloc(sizeof(Node*) * cap);
+    
+    // Add the prefix string (from " to { )
+    Node* str_node = node_create(parser->arena, NODE_STR_LIT, parser->previous.line, parser->previous.col);
+    str_node->str_val = sk_strdup(parser->previous.start + 1);
+    str_node->str_len = parser->previous.length - 2; // " to {
+    str_node->str_val[str_node->str_len] = '\0';
+    exprs[count++] = str_node;
+    
+    while (1) {
+        if (count >= cap) { cap *= 2; exprs = (Node**)realloc(exprs, sizeof(Node*) * cap); }
+        exprs[count++] = parse_expression(parser);
+        
+        if (match(parser, TOK_FSTR_MID)) {
+            Node* mid_node = node_create(parser->arena, NODE_STR_LIT, parser->previous.line, parser->previous.col);
+            mid_node->str_val = sk_strdup(parser->previous.start + 1); // skip }
+            mid_node->str_len = parser->previous.length - 2; // } to {
+            mid_node->str_val[mid_node->str_len] = '\0';
+            
+            if (count >= cap) { cap *= 2; exprs = (Node**)realloc(exprs, sizeof(Node*) * cap); }
+            exprs[count++] = mid_node;
+        } else if (match(parser, TOK_FSTR_END)) {
+            Node* end_node = node_create(parser->arena, NODE_STR_LIT, parser->previous.line, parser->previous.col);
+            end_node->str_val = sk_strdup(parser->previous.start + 1); // skip }
+            end_node->str_len = parser->previous.length - 2; // } to "
+            end_node->str_val[end_node->str_len] = '\0';
+            
+            if (count >= cap) { cap *= 2; exprs = (Node**)realloc(exprs, sizeof(Node*) * cap); }
+            exprs[count++] = end_node;
+            break;
+        } else {
+            error(parser, "Expected interpolated string continuation or end.");
+            break;
+        }
+    }
+    
+    node->interp_str.exprs = (Node**)arena_alloc(parser->arena, sizeof(Node*) * count);
+    memcpy(node->interp_str.exprs, exprs, sizeof(Node*) * count);
+    node->interp_str.count = count;
+    free(exprs);
+    return node;
+}
+
 static Node* parse_literal(Parser* parser) {
     Node* node;
     switch (parser->previous.kind) {
@@ -295,6 +344,7 @@ static ParseRule rules[] = {
     [TOK_INT_LIT]     = {parse_number,   NULL,         PREC_NONE},
     [TOK_FLOAT_LIT]   = {parse_number,   NULL,         PREC_NONE},
     [TOK_STR_LIT]     = {parse_string,   NULL,         PREC_NONE},
+    [TOK_FSTR_START]  = {parse_fstr,     NULL,         PREC_NONE},
     [TOK_BOOL_LIT]    = {parse_literal,  NULL,         PREC_NONE}, // Doesn't exist, using TRUE/FALSE
     [TOK_IDENT]       = {parse_variable, NULL,         PREC_NONE},
     

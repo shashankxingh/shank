@@ -109,6 +109,12 @@ void ast_print(Node* node, int indent) {
                 ast_print(node->program.stmts[i], indent + 1);
             }
             break;
+        case NODE_INTERP_STR:
+            printf("InterpStr\n");
+            for (int i = 0; i < node->interp_str.count; i++) {
+                ast_print(node->interp_str.exprs[i], indent + 1);
+            }
+            break;
         default:
             printf("NodeKind(%d)\n", node->kind);
             break;

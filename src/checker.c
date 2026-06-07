@@ -68,6 +68,13 @@ static Type* check_expr(Checker* checker, Node* expr) {
         case NODE_INT_LIT: type = type_int; break;
         case NODE_FLOAT_LIT: type = type_float; break;
         case NODE_STR_LIT: type = type_str; break;
+        case NODE_INTERP_STR: {
+            for (int i = 0; i < expr->interp_str.count; i++) {
+                check_expr(checker, expr->interp_str.exprs[i]);
+            }
+            type = type_str;
+            break;
+        }
         case NODE_BOOL_LIT: type = type_bool; break;
         
         case NODE_IDENT: {

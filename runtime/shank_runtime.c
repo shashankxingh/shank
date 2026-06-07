@@ -139,6 +139,54 @@ SkRange sk_range_step(int64_t start, int64_t end, int64_t step) {
     return r;
 }
 
+SkString sk_int_to_str(int64_t value) {
+    char buf[32];
+    int len = snprintf(buf, sizeof(buf), "%lld", (long long)value);
+    return sk_str_new(buf, len);
+}
+
+SkString sk_float_to_str(double value) {
+    char buf[64];
+    int len = snprintf(buf, sizeof(buf), "%g", value);
+    return sk_str_new(buf, len);
+}
+
+SkString sk_bool_to_str(int8_t value) {
+    if (value) {
+        return sk_str_new("True", 4);
+    } else {
+        return sk_str_new("False", 5);
+    }
+}
+
+char* sk_interp_concat(char* a, char* b) {
+    int len_a = a ? strlen(a) : 0;
+    int len_b = b ? strlen(b) : 0;
+    char* res = (char*)malloc(len_a + len_b + 1);
+    if (len_a) strcpy(res, a); else res[0] = '\0';
+    if (len_b) strcat(res, b);
+    return res;
+}
+
+char* sk_int_to_cstr(int64_t val) {
+    char* buf = (char*)malloc(32);
+    snprintf(buf, 32, "%lld", (long long)val);
+    return buf;
+}
+
+char* sk_float_to_cstr(double val) {
+    char* buf = (char*)malloc(64);
+    snprintf(buf, 64, "%g", val);
+    return buf;
+}
+
+char* sk_bool_to_cstr(int8_t val) {
+    char* buf = (char*)malloc(8);
+    strcpy(buf, val ? "True" : "False");
+    return buf;
+}
+
+
 // C Entry Point
 extern void shank_main(void);
 

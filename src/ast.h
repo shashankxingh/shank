@@ -20,6 +20,7 @@ typedef enum {
     TOK_MATCH, TOK_CASE,
     TOK_RETURN, TOK_BREAK, TOK_CONTINUE,
     TOK_IMPORT, TOK_TRUE, TOK_FALSE, TOK_NONE, TOK_OUT,
+    TOK_FSTR_START, TOK_FSTR_MID, TOK_FSTR_END, TOK_LBRACE, TOK_RBRACE,
     TOK_INDENT, TOK_DEDENT, TOK_NEWLINE, TOK_EOF, TOK_ERROR
 } TokenKind;
 
@@ -33,7 +34,7 @@ typedef enum {
     NODE_MATCH, NODE_CASE,
     NODE_EXPR_STMT, NODE_BREAK, NODE_CONTINUE,
     NODE_FN_DEF, NODE_STRUCT_DEF, NODE_ENUM_DEF,
-    NODE_IMPORT, NODE_PROGRAM
+    NODE_IMPORT, NODE_PROGRAM, NODE_INTERP_STR
 } NodeKind;
 
 typedef struct Node Node;
@@ -71,6 +72,7 @@ struct Node {
         struct { Node* object; char* field; } field_access;
         struct { Node* object; Node* index; } index_access;
         struct { Node** elements; int count; } array_lit;
+        struct { Node** exprs; int count; } interp_str;
         
         struct { char* let_name; Node* let_type; Node* let_value; int let_mutable; } let_decl;
         struct { Node* assign_target; Node* assign_value; } assign;

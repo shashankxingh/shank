@@ -29,6 +29,10 @@ typedef struct {
     int indent_depth;
     int pending_dedents;
     int is_at_line_start;
+    
+    // For string interpolation
+    int in_fstr;
+    int brace_depth;
 } Lexer;
 
 void lexer_init(Lexer* lexer, const char* source, const char* filename);
