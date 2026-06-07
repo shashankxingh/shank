@@ -239,6 +239,21 @@ static Node* parse_array_literal(Parser* parser) {
     
     return node;
 }
+static Node* parse_put_expr(Parser* parser) {
+    int line = parser->previous.line;
+    int col = parser->previous.col;
+    
+    int has_paren = match(parser, TOK_LPAREN);
+    Node* prompt = parse_expression(parser);
+    if (has_paren) {
+        consume(parser, TOK_RPAREN, "Expect ')' after put prompt.");
+    }
+    
+    Node* node = node_create(parser->arena, NODE_PUT, line, col);
+    node->put_expr.prompt = prompt;
+    node->resolved_type = NULL; // will be resolved in checker
+    return node;
+}
 
 static Node* parse_unary(Parser* parser) {
     TokenKind operator_type = parser->previous.kind;
@@ -375,6 +390,7 @@ static ParseRule rules[] = {
     [TOK_TRUE]        = {parse_literal,  NULL,         PREC_NONE},
     [TOK_FALSE]       = {parse_literal,  NULL,         PREC_NONE},
     [TOK_NONE]        = {parse_literal,  NULL,         PREC_NONE},
+    [TOK_PUT]         = {parse_put_expr, NULL,         PREC_NONE},
 };
 
 static ParseRule* get_rule(TokenKind kind) {

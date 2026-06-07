@@ -259,6 +259,17 @@ static Type* check_expr(Checker* checker, Node* expr) {
             break;
         }
         
+        case NODE_PUT: {
+            Type* prompt_t = check_expr(checker, expr->put_expr.prompt);
+            if (prompt_t != type_unknown && prompt_t != type_str) {
+                sk_error(NULL, expr->line, expr->col, "Prompt for 'put' must be a string.");
+                checker->had_error = 1;
+            }
+            // type defaults to unknown, it will be resolved by the parent statement (e.g. NODE_IM)
+            type = type_unknown;
+            break;
+        }
+        
         default:
             break;
     }
@@ -291,6 +302,16 @@ static void check_stmt(Checker* checker, Node* stmt) {
             }
             
             Type* final_t = type_unknown;
+            if (stmt->let_decl.let_value && stmt->let_decl.let_value->kind == NODE_PUT) {
+                if (ann_t != type_unknown) {
+                    val_t = ann_t;
+                    stmt->let_decl.let_value->resolved_type = ann_t;
+                } else {
+                    val_t = type_str; // default to str
+                    stmt->let_decl.let_value->resolved_type = type_str;
+                }
+            }
+
             if (ann_t != type_unknown && val_t != type_unknown) {
                 if (!type_equals(ann_t, val_t)) {
                     char* a = type_to_string(ann_t);
@@ -327,6 +348,11 @@ static void check_stmt(Checker* checker, Node* stmt) {
         case NODE_ASSIGN: {
             Type* target_t = check_expr(checker, stmt->assign.assign_target);
             Type* val_t = check_expr(checker, stmt->assign.assign_value);
+            
+            if (stmt->assign.assign_value->kind == NODE_PUT && target_t != type_unknown) {
+                val_t = target_t;
+                stmt->assign.assign_value->resolved_type = target_t;
+            }
             
             if (stmt->assign.assign_target->kind == NODE_IDENT) {
                 Symbol* sym = symbol_lookup(checker->symbols, stmt->assign.assign_target->name);

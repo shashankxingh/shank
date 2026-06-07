@@ -187,6 +187,72 @@ char* sk_bool_to_cstr(int8_t val) {
 }
 
 
+// Input functions
+static void print_prompt(const char* prompt_data, int64_t prompt_len) {
+    if (prompt_data && prompt_len > 0) {
+        printf("%.*s", (int)prompt_len, prompt_data);
+        fflush(stdout);
+    }
+}
+
+static char* read_line(void) {
+    char* line = NULL;
+    size_t len = 0;
+    // Hand-rolled simple getline equivalent for Windows compat
+    int cap = 128;
+    line = (char*)malloc(cap);
+    int count = 0;
+    int c;
+    while ((c = fgetc(stdin)) != EOF && c != '\n') {
+        if (c == '\r') continue;
+        if (count + 1 >= cap) {
+            cap *= 2;
+            line = (char*)realloc(line, cap);
+        }
+        line[count++] = (char)c;
+    }
+    line[count] = '\0';
+    return line;
+}
+
+int64_t sk_input_int(const char* prompt_data, int64_t prompt_len) {
+    print_prompt(prompt_data, prompt_len);
+    char* line = read_line();
+    int64_t val = strtoll(line, NULL, 10);
+    free(line);
+    return val;
+}
+
+double sk_input_float(const char* prompt_data, int64_t prompt_len) {
+    print_prompt(prompt_data, prompt_len);
+    char* line = read_line();
+    double val = strtod(line, NULL);
+    free(line);
+    return val;
+}
+
+char* sk_input_str(const char* prompt_data, int64_t prompt_len) {
+    print_prompt(prompt_data, prompt_len);
+    char* line = read_line();
+    return line;
+}
+
+int64_t sk_cstr_len(const char* str) {
+    return str ? strlen(str) : 0;
+}
+
+int8_t sk_input_bool(const char* prompt_data, int64_t prompt_len) {
+    print_prompt(prompt_data, prompt_len);
+    char* line = read_line();
+    int8_t val = 0;
+    if (strcmp(line, "true") == 0 || strcmp(line, "True") == 0 || strcmp(line, "1") == 0) {
+        val = 1;
+    }
+    free(line);
+    return val;
+}
+
+
 // C Entry Point
 extern void shank_main(void);
 

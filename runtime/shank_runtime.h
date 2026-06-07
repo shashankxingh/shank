@@ -59,4 +59,11 @@ typedef struct { int64_t start; int64_t end; int64_t step; } SkRange;
 SkRange sk_range(int64_t start, int64_t end);
 SkRange sk_range_step(int64_t start, int64_t end, int64_t step);
 
+// Input functions
+int64_t sk_input_int(const char* prompt_data, int64_t prompt_len);
+double sk_input_float(const char* prompt_data, int64_t prompt_len);
+char* sk_input_str(const char* prompt_data, int64_t prompt_len);
+int8_t sk_input_bool(const char* prompt_data, int64_t prompt_len);
+int64_t sk_cstr_len(const char* str);
+
 #endif

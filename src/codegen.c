@@ -154,6 +154,51 @@ static void gen_expr(Codegen* cg, Node* expr) {
             break;
         }
         
+        case NODE_PUT: {
+            // First evaluate the prompt string (which puts string ptr in rax, length in r10)
+            gen_expr(cg, expr->put_expr.prompt);
+            
+            // Pass string ptr to rcx and length to rdx (Windows x64 ABI)
+            emit(cg, "mov rcx, rax");
+            emit(cg, "mov rdx, r10");
+            
+            // Call the correct runtime function based on resolved type
+            // Stack MUST be 16-byte aligned before call
+            emit(cg, "push r12");
+            emit(cg, "mov r12, rsp");
+            emit(cg, "and rsp, -16"); // Align to 16 bytes
+            emit(cg, "sub rsp, 32");  // Shadow space
+            
+            if (expr->resolved_type == type_int) {
+                emit(cg, "call sk_input_int");
+            } else if (expr->resolved_type == type_float) {
+                emit(cg, "call sk_input_float");
+                // The result is already in xmm0
+            } else if (expr->resolved_type == type_bool) {
+                emit(cg, "call sk_input_bool");
+            } else {
+                // Default to string
+                emit(cg, "call sk_input_str");
+                
+                // sk_input_str returns char* in rax. We need length in r10.
+                emit(cg, "push r13"); // preserve r13 (misaligns by 8)
+                emit(cg, "sub rsp, 8"); // re-align to 16
+                emit(cg, "mov r13, rax"); // save pointer
+                emit(cg, "mov rcx, rax"); // pass to sk_cstr_len
+                emit(cg, "sub rsp, 32");
+                emit(cg, "call sk_cstr_len");
+                emit(cg, "add rsp, 32");
+                emit(cg, "mov r10, rax"); // length to r10
+                emit(cg, "mov rax, r13"); // restore pointer
+                emit(cg, "add rsp, 8");
+                emit(cg, "pop r13");
+            }
+            
+            emit(cg, "mov rsp, r12"); // Restore original unaligned stack
+            emit(cg, "pop r12");
+            break;
+        }
+
         case NODE_BOOL_LIT:
             emit(cg, "mov rax, %d", expr->bool_val);
             break;
@@ -479,12 +524,18 @@ char* codegen_generate(Checker* checker, Node* program) {
     emit(&cg, "extern sk_print_str");
     emit(&cg, "extern sk_print_bool");
     emit(&cg, "extern sk_print_newline");
-    emit(&cg, "extern sk_alloc");
-    emit(&cg, "extern sk_free");
-    emit(&cg, "extern sk_interp_concat");
+    emit(&cg, "extern sk_str_concat");
     emit(&cg, "extern sk_int_to_cstr");
     emit(&cg, "extern sk_float_to_cstr");
     emit(&cg, "extern sk_bool_to_cstr");
+    emit(&cg, "extern sk_interp_concat");
+    emit(&cg, "extern sk_alloc");
+    emit(&cg, "extern sk_free");
+    emit(&cg, "extern sk_input_int");
+    emit(&cg, "extern sk_input_float");
+    emit(&cg, "extern sk_input_str");
+    emit(&cg, "extern sk_input_bool");
+    emit(&cg, "extern sk_cstr_len");
     emit(&cg, "extern ExitProcess\n");
     
     emit(&cg, "section .text\n");

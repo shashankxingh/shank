@@ -92,6 +92,7 @@ static TokenKind identifier_type(Lexer* lexer, const char* start) {
     MATCH("im", TOK_IM)
     MATCH("mut", TOK_MUT)
     MATCH("out", TOK_OUT)
+    MATCH("put", TOK_PUT)
     MATCH("fn", TOK_FN)
     MATCH("struct", TOK_STRUCT)
     MATCH("enum", TOK_ENUM)
