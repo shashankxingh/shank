@@ -216,19 +216,52 @@ static char* read_line(void) {
 }
 
 int64_t sk_input_int(const char* prompt_data, int64_t prompt_len) {
-    print_prompt(prompt_data, prompt_len);
-    char* line = read_line();
-    int64_t val = strtoll(line, NULL, 10);
-    free(line);
-    return val;
+    while (1) {
+        print_prompt(prompt_data, prompt_len);
+        char* line = read_line();
+        if (line[0] == '\0') {
+            free(line);
+            continue;
+        }
+        
+        char* endptr;
+        int64_t val = strtoll(line, &endptr, 10);
+        
+        // If endptr is not at the end of the string (ignoring whitespace), it's invalid
+        while (*endptr == ' ' || *endptr == '\t') endptr++;
+        
+        if (*endptr == '\0' && endptr != line) {
+            free(line);
+            return val;
+        }
+        
+        printf("Error: Invalid input. Expected an integer.\n");
+        free(line);
+    }
 }
 
 double sk_input_float(const char* prompt_data, int64_t prompt_len) {
-    print_prompt(prompt_data, prompt_len);
-    char* line = read_line();
-    double val = strtod(line, NULL);
-    free(line);
-    return val;
+    while (1) {
+        print_prompt(prompt_data, prompt_len);
+        char* line = read_line();
+        if (line[0] == '\0') {
+            free(line);
+            continue;
+        }
+        
+        char* endptr;
+        double val = strtod(line, &endptr);
+        
+        while (*endptr == ' ' || *endptr == '\t') endptr++;
+        
+        if (*endptr == '\0' && endptr != line) {
+            free(line);
+            return val;
+        }
+        
+        printf("Error: Invalid input. Expected a decimal number.\n");
+        free(line);
+    }
 }
 
 char* sk_input_str(const char* prompt_data, int64_t prompt_len) {
@@ -242,14 +275,26 @@ int64_t sk_cstr_len(const char* str) {
 }
 
 int8_t sk_input_bool(const char* prompt_data, int64_t prompt_len) {
-    print_prompt(prompt_data, prompt_len);
-    char* line = read_line();
-    int8_t val = 0;
-    if (strcmp(line, "true") == 0 || strcmp(line, "True") == 0 || strcmp(line, "1") == 0) {
-        val = 1;
+    while (1) {
+        print_prompt(prompt_data, prompt_len);
+        char* line = read_line();
+        if (line[0] == '\0') {
+            free(line);
+            continue;
+        }
+        
+        if (strcmp(line, "true") == 0 || strcmp(line, "True") == 0 || strcmp(line, "1") == 0) {
+            free(line);
+            return 1;
+        }
+        if (strcmp(line, "false") == 0 || strcmp(line, "False") == 0 || strcmp(line, "0") == 0) {
+            free(line);
+            return 0;
+        }
+        
+        printf("Error: Invalid input. Expected true, false, 1, or 0.\n");
+        free(line);
     }
-    free(line);
-    return val;
 }
 
 
