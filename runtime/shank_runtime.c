@@ -5,6 +5,10 @@ void sk_print_int(int64_t value) {
     printf("%lld", (long long)value);
 }
 
+void sk_print_char(int64_t value) {
+    printf("%c", (char)value);
+}
+
 void sk_print_float(double value) {
     printf("%f", value);
 }

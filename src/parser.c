@@ -59,6 +59,7 @@ static void synchronize(Parser* parser) {
             case TOK_MUT:
             case TOK_OUT:
             case TOK_OUTT:
+            case TOK_OUTC:
             case TOK_FN:
             case TOK_STRUCT:
             case TOK_IF:
@@ -505,6 +506,18 @@ static Node* parse_outt_stmt(Parser* parser) {
     return node;
 }
 
+static Node* parse_outc_stmt(Parser* parser) {
+    int line = parser->previous.line;
+    int col = parser->previous.col;
+    
+    Node* expr = parse_expression(parser);
+    consume(parser, TOK_NEWLINE, "Expect newline after outc statement.");
+    
+    Node* node = node_create(parser->arena, NODE_OUTC, line, col);
+    node->expr = expr;
+    return node;
+}
+
 static Node* parse_block(Parser* parser, int* count_out) {
     consume(parser, TOK_NEWLINE, "Expect newline before block.");
     while (match(parser, TOK_NEWLINE)) {} // Skip empty lines before the indent
@@ -873,6 +886,7 @@ static Node* parse_statement(Parser* parser) {
     if (match(parser, TOK_MUT)) return parse_im_decl(parser, 1);
     if (match(parser, TOK_OUT)) return parse_out_stmt(parser);
     if (match(parser, TOK_OUTT)) return parse_outt_stmt(parser);
+    if (match(parser, TOK_OUTC)) return parse_outc_stmt(parser);
     if (match(parser, TOK_IF)) return parse_if_stmt(parser);
     if (match(parser, TOK_WHILE)) return parse_while_stmt(parser);
     if (match(parser, TOK_FOR)) return parse_for_stmt(parser);

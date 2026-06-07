@@ -1,0 +1,257 @@
+im int n = 5
+
+out "--- Pattern 26 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        outt "*"
+    out ""
+repeat n - 1 as i:
+    repeat n - i - 1 as j:
+        outt "*"
+    out ""
+
+out "--- Pattern 27 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        outc(49 + j)
+    repeat i as j:
+        outc(49 + i - j - 1)
+    out ""
+
+out "--- Pattern 28 ---"
+repeat n as i:
+    repeat n - i - 1 as j:
+        outt " "
+    repeat i + 1 as j:
+        outc(49 + j)
+    repeat i as j:
+        outc(49 + i - j - 1)
+    out ""
+
+out "--- Pattern 29 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or i == n - 1 or j == 0 or j == n - 1 or (i == 2 and j == 2):
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 30 ---"
+repeat n as i:
+    repeat n - i - 1 as j:
+        outt " "
+    repeat n as j:
+        if i == 0 or i == n - 1 or j == 0 or j == n - 1:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 31 ---"
+repeat n as i:
+    repeat i as j:
+        outt " "
+    repeat n as j:
+        if i == 0 or i == n - 1 or j == 0 or j == n - 1:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 32 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        outt "*"
+    out ""
+repeat n - 1 as i:
+    repeat n - i - 1 as j:
+        outt "*"
+    out ""
+
+out "--- Pattern 33 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or i == n / 2 or i == n - 1:
+            outt "*"
+        elif i < n / 2 and j == 0:
+            outt "*"
+        elif i > n / 2 and j == n - 1:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 34 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or i == n / 2 or i == n - 1 or j == 0:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 35 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or i == n - 1 or j == 0 or (i == n / 2 and j < n - 1):
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 36 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or j == 0 or (i == n / 2 and j < n - 1):
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 37 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or i == n - 1 or j == 0:
+            outt "*"
+        elif i >= n / 2 and j == n - 1:
+            outt "*"
+        elif i == n / 2 and j >= n / 2:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 38 ---"
+repeat n as i:
+    repeat n as j:
+        if j == 0 or j == n - 1 or i == n / 2:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 39 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or i == n - 1 or j == n / 2:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 40 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or i == n - 1 or j == n / 2:
+            outt "*"
+        elif i > n / 2 and j == 0:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 41 ---"
+repeat n as i:
+    repeat n as j:
+        if j == 0:
+            outt "*"
+        elif i + j == n - 1 or i - j == n / 2:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 42 ---"
+repeat n as i:
+    repeat n as j:
+        if j == 0 or i == n - 1:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 43 ---"
+repeat n as i:
+    repeat n as j:
+        if j == 0 or j == n - 1:
+            outt "*"
+        elif i <= n / 2 and (i == j or i + j == n - 1):
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 44 ---"
+repeat n as i:
+    repeat n as j:
+        if j == 0 or j == n - 1 or i == j:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 45 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or i == n - 1 or j == 0 or j == n - 1:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 46 ---"
+repeat n as i:
+    repeat n as j:
+        if j == 0 or i == 0 or i == n / 2 or (j == n - 1 and i <= n / 2):
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 47 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or i == n - 1 or j == 0 or j == n - 1:
+            if i == n - 1 and j == n - 1:
+                outt " "
+            else:
+                outt "*"
+        elif i == j and i >= n / 2:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 48 ---"
+repeat n as i:
+    repeat n as j:
+        if j == 0 or i == 0 or i == n / 2 or (j == n - 1 and i <= n / 2):
+            outt "*"
+        elif i > n / 2 and i == j:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 49 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or i == n / 2 or i == n - 1:
+            outt "*"
+        elif i < n / 2 and j == 0:
+            outt "*"
+        elif i > n / 2 and j == n - 1:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 50 ---"
+repeat n as i:
+    repeat n as j:
+        if i == 0 or j == n / 2:
+            outt "*"
+        else:
+            outt " "
+    out ""

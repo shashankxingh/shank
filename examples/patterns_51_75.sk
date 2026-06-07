@@ -1,0 +1,311 @@
+im int n = 5
+mut int num = 1
+
+out "--- Pattern 51 ---"
+repeat n - 1 as i:
+    repeat i + 1 as j:
+        outt "*"
+    repeat ((n - i - 1) * 2) - 1 as j:
+        outt " "
+    repeat i + 1 as j:
+        outt "*"
+    out ""
+repeat n * 2 - 1 as j:
+    outt "*"
+out ""
+repeat n - 1 as i:
+    repeat n - i - 1 as j:
+        outt "*"
+    repeat (i * 2) + 1 as j:
+        outt " "
+    repeat n - i - 1 as j:
+        outt "*"
+    out ""
+
+out "--- Pattern 52 ---"
+repeat n as i:
+    repeat n - i - 1 as j:
+        outt " "
+    if i == 0:
+        outt "*"
+    else:
+        outt "*"
+        repeat (i * 2) - 1 as j:
+            outt " "
+        outt "*"
+    out ""
+repeat n - 1 as i:
+    repeat i + 1 as j:
+        outt " "
+    if i == n - 2:
+        outt "*"
+    else:
+        outt "*"
+        repeat ((n - i - 2) * 2) - 1 as j:
+            outt " "
+        outt "*"
+    out ""
+
+out "--- Pattern 53 ---"
+num = 1
+repeat 4 as i:
+    repeat i + 1 as j:
+        outt num
+        outt " "
+        num = num + 1
+    out ""
+
+out "--- Pattern 54 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        outt i + 1
+        outt " "
+    out ""
+
+out "--- Pattern 55 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        outt n - j
+        outt " "
+    out ""
+
+out "--- Pattern 56 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        outc(65 + j)
+        outt " "
+    out ""
+
+out "--- Pattern 57 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        outc(65 + n - j - 1)
+        outt " "
+    out ""
+
+out "--- Pattern 58 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        outt j + 1
+        outt " "
+    out ""
+repeat n - 1 as i:
+    repeat n - i - 1 as j:
+        outt j + 1
+        outt " "
+    out ""
+
+out "--- Pattern 59 ---"
+repeat n as i:
+    if i == 0:
+        outt "*"
+    elif i == n - 1:
+        repeat n * 2 - 1 as j:
+            outt "*"
+    else:
+        outt "*"
+        repeat (i * 2) - 1 as j:
+            outt " "
+        outt "*"
+    out ""
+
+out "--- Pattern 60 ---"
+repeat n as i:
+    if i == 0 or i == n - 1:
+        repeat n * 2 - 1 as j:
+            outt "*"
+    else:
+        outt "*"
+        repeat n * 2 - 3 as j:
+            outt " "
+        outt "*"
+    out ""
+
+out "--- Pattern 61 ---"
+repeat n as i:
+    repeat n - i - 1 as j:
+        outt " "
+    if i == 0:
+        outt "*"
+    elif i == n - 1:
+        repeat n * 2 - 1 as j:
+            outt "*"
+    else:
+        outt "*"
+        repeat (i * 2) - 1 as j:
+            outt " "
+        outt "*"
+    out ""
+
+out "--- Pattern 62 ---"
+repeat n as i:
+    repeat i as j:
+        outt " "
+    if i == n - 1:
+        outt "*"
+    elif i == 0:
+        repeat n * 2 - 1 as j:
+            outt "*"
+    else:
+        outt "*"
+        repeat ((n - i - 1) * 2) - 1 as j:
+            outt " "
+        outt "*"
+    out ""
+
+out "--- Pattern 63 ---"
+repeat n as i:
+    repeat n - i - 1 as j:
+        outt " "
+    if i == 0:
+        outt "*"
+    elif i == n - 1:
+        repeat n * 2 - 1 as j:
+            outt "*"
+    else:
+        outt "*"
+        repeat (i * 2) - 1 as j:
+            outt " "
+        outt "*"
+    out ""
+repeat n - 1 as i:
+    repeat i + 1 as j:
+        outt " "
+    if i == n - 2:
+        outt "*"
+    else:
+        outt "*"
+        repeat ((n - i - 2) * 2) - 1 as j:
+            outt " "
+        outt "*"
+    out ""
+
+out "--- Pattern 64 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        if j % 2 == 0:
+            outt "1"
+        else:
+            outt "0"
+    out ""
+
+out "--- Pattern 65 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        if j % 2 == 0:
+            outt "0"
+        else:
+            outt "1"
+    out ""
+
+out "--- Pattern 66 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        outc(65 + j)
+    repeat i as j:
+        outc(65 + i - j - 1)
+    out ""
+
+out "--- Pattern 67 ---"
+repeat n as i:
+    repeat n - i - 1 as j:
+        outt " "
+    repeat i + 1 as j:
+        outc(65 + j)
+    repeat i as j:
+        outc(65 + i - j - 1)
+    out ""
+
+out "--- Pattern 68 ---"
+repeat n as i:
+    repeat i as j:
+        outt " "
+    repeat n - i as j:
+        outc(65 + j)
+    repeat n - i - 1 as j:
+        outc(65 + n - i - j - 2)
+    out ""
+
+out "--- Pattern 69 ---"
+repeat n as i:
+    repeat i + 1 as j:
+        outt i + j + 1
+    repeat i as j:
+        outt i * 2 - j
+    out ""
+
+out "--- Pattern 70 ---"
+repeat 9 as i:
+    repeat 9 as j:
+        if i == 0 or i == 8 or j == 0 or j == 8:
+            outt "*"
+        elif (i == 2 or i == 6) and (j >= 2 and j <= 6):
+            outt "*"
+        elif (i == 3 or i == 4 or i == 5) and (j == 2 or j == 6):
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 71 ---"
+repeat n + 1 as i:
+    if i == 0:
+        outt "*"
+    elif i == n:
+        repeat n + 1 as j:
+            outt "*"
+    else:
+        outt "*"
+        repeat i - 1 as j:
+            outt " "
+        outt "*"
+    out ""
+
+out "--- Pattern 72 ---"
+repeat n + 1 as i:
+    if i == 0:
+        repeat n + 1 as j:
+            outt "*"
+    elif i == n:
+        outt "*"
+    else:
+        outt "*"
+        repeat n - i - 1 as j:
+            outt " "
+        outt "*"
+    out ""
+
+out "--- Pattern 73 ---"
+repeat n as i:
+    repeat n * 2 - 1 as j:
+        if i == 0 or i == n / 2 or i == n - 1 or j == 0 or j == n * 2 - 2:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 74 ---"
+repeat n as i:
+    repeat n * 2 - 1 as j:
+        if i == 0 or i == n / 2 or i == n - 1:
+            if i == n / 2 and j == n * 2 - 2:
+                outt " "
+            else:
+                outt "*"
+        elif j == 0:
+            outt "*"
+        else:
+            outt " "
+    out ""
+
+out "--- Pattern 75 ---"
+repeat n as i:
+    repeat n * 2 - 1 as j:
+        if i == 0 or i == n / 2 or j == 0:
+            if i == n / 2 and j >= n + 1:
+                outt " "
+            else:
+                outt "*"
+        else:
+            outt " "
+    out ""

@@ -79,6 +79,11 @@ void ast_print(Node* node, int indent) {
             ast_print(node->expr, 0);
             printf(")\n");
             break;
+        case NODE_OUTC:
+            printf("OutcStmt(");
+            ast_print(node->expr, 0);
+            printf(")\n");
+            break;
         case NODE_ASSIGN:
             printf("Assign\n");
             ast_print(node->assign.assign_target, indent + 1);

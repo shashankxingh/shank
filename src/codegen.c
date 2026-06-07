@@ -231,6 +231,11 @@ static void gen_expr(Codegen* cg, Node* expr) {
                     emit(cg, "cqo");
                     emit(cg, "idiv rcx"); // result in rax
                     break;
+                case TOK_PERCENT:
+                    emit(cg, "cqo");
+                    emit(cg, "idiv rcx"); 
+                    emit(cg, "mov rax, rdx"); // remainder in rdx
+                    break;
                 case TOK_EQ:
                     emit(cg, "cmp rax, rcx");
                     emit(cg, "sete al");
@@ -260,6 +265,12 @@ static void gen_expr(Codegen* cg, Node* expr) {
                     emit(cg, "cmp rax, rcx");
                     emit(cg, "setge al");
                     emit(cg, "movzx rax, al");
+                    break;
+                case TOK_AND:
+                    emit(cg, "and rax, rcx");
+                    break;
+                case TOK_OR:
+                    emit(cg, "or rax, rcx");
                     break;
                 default: break;
             }
@@ -451,6 +462,15 @@ static void gen_stmt(Codegen* cg, Node* stmt) {
             break;
         }
         
+        case NODE_OUTC: {
+            gen_expr(cg, stmt->expr);
+            emit(cg, "mov rcx, rax");
+            emit(cg, "sub rsp, 32");
+            emit(cg, "call sk_print_char");
+            emit(cg, "add rsp, 32");
+            break;
+        }
+        
         case NODE_ASSIGN: {
             if (stmt->assign.assign_target->kind == NODE_IDENT) {
                 Symbol* sym = symbol_lookup(cg->symbols, stmt->assign.assign_target->name);
@@ -606,9 +626,9 @@ static void gen_stmt(Codegen* cg, Node* stmt) {
             emit(cg, "sk_%s:", stmt->fn_def.fn_name);
             emit(cg, "push rbp");
             emit(cg, "mov rbp, rsp");
-            
             // Local variable allocation space
-            emit(cg, "sub rsp, 256"); // Preallocate for v0.1
+            int fn_rsp_patch = cg->out->len;
+            emit(cg, "sub rsp, 000000"); // 6 digits for patching
             
             int saved_offset = cg->stack_offset;
             cg->stack_offset = 0;
@@ -629,6 +649,14 @@ static void gen_stmt(Codegen* cg, Node* stmt) {
             for (int i = 0; i < stmt->fn_def.fn_body_count; i++) {
                 gen_stmt(cg, stmt->fn_def.fn_body[i]);
             }
+            
+            int alloc_size = cg->stack_offset;
+            if (alloc_size % 16 != 0) alloc_size += 16 - (alloc_size % 16);
+            char buf[16];
+            snprintf(buf, sizeof(buf), "%06d", alloc_size);
+            memcpy(cg->out->data + fn_rsp_patch + 13, buf, 6);
+            
+            cg->stack_offset = saved_offset;
             scope_pop(cg->symbols);
             
             // Default return if no explicit return
@@ -661,6 +689,7 @@ char* codegen_generate(Checker* checker, Node* program) {
     
     // External functions from our runtime
     emit(&cg, "extern sk_print_int");
+    emit(&cg, "extern sk_print_char");
     emit(&cg, "extern sk_print_float");
     emit(&cg, "extern sk_print_str");
     emit(&cg, "extern sk_print_bool");
@@ -693,13 +722,20 @@ char* codegen_generate(Checker* checker, Node* program) {
     emit(&cg, "shank_main:");
     emit(&cg, "push rbp");
     emit(&cg, "mov rbp, rsp");
-    emit(&cg, "sub rsp, 256"); // space for locals
+    int main_rsp_patch = cg.out->len;
+    emit(&cg, "sub rsp, 000000"); // space for locals
     
     for (int i = 0; i < program->program.stmt_count; i++) {
         if (program->program.stmts[i]->kind != NODE_FN_DEF && program->program.stmts[i]->kind != NODE_STRUCT_DEF) {
             gen_stmt(&cg, program->program.stmts[i]);
         }
     }
+    
+    int main_alloc_size = cg.stack_offset;
+    if (main_alloc_size % 16 != 0) main_alloc_size += 16 - (main_alloc_size % 16);
+    char buf2[16];
+    snprintf(buf2, sizeof(buf2), "%06d", main_alloc_size);
+    memcpy(cg.out->data + main_rsp_patch + 13, buf2, 6);
     
     // Exit
     emit(&cg, "mov rcx, 0");

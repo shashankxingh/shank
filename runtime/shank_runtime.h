@@ -22,6 +22,7 @@ typedef struct {
 
 // Print functions (called from generated assembly)
 void sk_print_int(int64_t value);
+void sk_print_char(int64_t value);
 void sk_print_float(double value);
 void sk_print_str(const char* data, int64_t len);
 void sk_print_bool(int8_t value);

@@ -378,6 +378,14 @@ static void check_stmt(Checker* checker, Node* stmt) {
             check_expr(checker, stmt->expr);
             break;
         }
+        case NODE_OUTC: {
+            check_expr(checker, stmt->expr);
+            if (stmt->expr->resolved_type != type_int) {
+                sk_error(NULL, stmt->line, stmt->col, "outc expression must be an integer.");
+                checker->had_error = 1;
+            }
+            break;
+        }
 
         
         case NODE_ASSIGN: {
